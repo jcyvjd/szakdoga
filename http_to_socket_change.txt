@@ -1,0 +1,41 @@
+Controller fileok hasonloan http requestekhez
+
+pl: messageController.js
+
+import { io } from '../socket/socket.js'; // Import socket.io instance if needed
+import Chat from '../models/chatModel.js';
+import Message from '../models/messageModel.js';
+import Room from '../models/roomModel.js';
+import { getReceiverSocketId } from '../socket/socket.js'; // If needed
+
+export const handleNewMessage = async (socket, messageData) => {
+    try {
+        // Handle new message event here...
+        // Access necessary models, perform actions, emit events, etc.
+        // Example:
+        const { message, roomId } = messageData;
+        const senderId = socket.user._id;
+        const username = socket.user.username;
+        // Handle message creation, saving, emitting, etc.
+    } catch (error) {
+        // Handle errors
+    }
+};
+
+import and use it in socket.js
+// socket.js
+
+import { io } from 'socket.io';
+import { handleNewMessage } from './controllers/messageController.js';
+// Import other controller functions as needed
+
+io.on('connection', (socket) => {
+    // Handle socket connection events...
+    // Example:
+    socket.on('NewMessage', (messageData) => handleNewMessage(socket, messageData));
+    // Attach other socket event handlers here...
+});
+
+ehhez hasonloan az osszes tobbi controller
+
+authentikacio maradhat http nem kell real-time gyorsan

@@ -1,0 +1,91 @@
+socket authentikacio
+
+//socket.js
+
+
+import { Server } from 'socket.io';
+import http from 'http';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
+import User from '../models/userModel.js';
+import protectRoute from '../middleware/protectRoute.js';
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: ["http://localhost:3000"],
+        methods: ["GET", "POST"],
+    }
+});
+
+// Middleware for parsing cookies
+app.use(cookieParser());
+
+// Socket.IO connection handler
+io.on('connection', async (socket) => {
+    try {
+        // Extract token from cookies
+        const token = socket.handshake.headers.cookie?.split('=')[1];
+
+        // Verify and decode the token
+        const decoded = jwt.verify(token, process.env.SECRET);
+
+        if (!decoded) {
+            throw new Error('Unauthorized');
+        }
+
+        // Find the user based on the decoded token
+        const user = await User.findById(decoded.userId).select("-password");
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Attach user information to the socket object
+        socket.user = user;
+
+        // Add socket to the userSocketMap
+        userSocketMap[user._id] = socket.id;
+
+        console.log(`User ${user.username} connected`);
+
+        // Handle disconnection
+        socket.on('disconnect', () => {
+            delete userSocketMap[user._id];
+            console.log(`User ${user.username} disconnected`);
+        });
+
+        // Handle messaging functionality
+        socket.on('sendMessage', (messageData) => {
+            // Extract message details from messageData
+            const { recipientId, message } = messageData;
+
+            // Get the recipient's socket ID from userSocketMap
+            const recipientSocketId = userSocketMap[recipientId];
+
+            // If recipientSocketId exists, emit the message to the recipient
+            if (recipientSocketId) {
+                io.to(recipientSocketId).emit('newMessage', {
+                    sender: user.username,
+                    message: message
+                });
+            }
+        });
+
+    } catch (error) {
+        console.error('Socket connection error:', error.message);
+        // Handle unauthorized or other errors
+        socket.emit('error', { message: 'Unauthorized' });
+        socket.disconnect();
+    }
+});
+
+// Start the server
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+
+// Export io and userSocketMap for external use
+export { io, userSocketMap };
