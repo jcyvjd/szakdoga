@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { useRoomContext } from '../../context/RoomContext';
-import { useAuthContext } from '../../context/AuthContext';
-import useListenRooms from '../../hooks/useListenRooms';
+import React, { useEffect } from "react";
+import { useRoomContext } from "../../context/RoomContext";
+import { useAuthContext } from "../../context/AuthContext";
+import useListenRooms from "../../hooks/useListenRooms";
 
-import RoomForm from './RoomForm';
-import useLogout from '../../hooks/useLogout';
-import HomeSideBar from './HomeSideBar';
+import RoomForm from "./RoomForm";
+import useLogout from "../../hooks/useLogout";
+import HomeSideBar from "./HomeSideBar";
 
 const Home = () => {
   const { rooms, setRooms } = useRoomContext();
@@ -38,18 +38,18 @@ const Home = () => {
       fetchRooms();
     }
   }, [authUser]);
-  
+
   return (
-    <div className='flex h-full w-full pt-5 justify-center'>
-      <div className="flexücol">
+
+    <div className="flex md:flex">
+      <div className="w-full md:w-1/2 justify-center">
+        <RoomForm />
+      </div>
+      <div className="w-full md:w-1/2 pt-10">
         <HomeSideBar rooms={rooms} />
       </div>
-      <div className="flex-1 ml-auto">
-        <div className="sticky top-16 right-0 mt-4 flex justify-end">
-          <RoomForm />
-        </div>
-      </div>
     </div>
+    
   );
 };
 

@@ -24,15 +24,15 @@ const HomeSideBar = ({ rooms }) => {
   };
 
   return (
-    <div className="flex-initial overflow-y-auto h-full">
-      <div className="sticky top-0 z-10 bg-white">
-        <div className="mb-4 relative">
+    <div className="relative overflow-y-auto h-full">
+      <div className="sticky top-0 z-10">
+        <div className="mb-4">
           <input
             type="text"
             placeholder="Search rooms..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="p-2 border border-gray-300 rounded-md w-full"
+            className="p-2 border placeholder-neutral-content bg-primary border-primary-content text-primary-content rounded-md w-1/2"
           />
           {searchQuery && (
             <button

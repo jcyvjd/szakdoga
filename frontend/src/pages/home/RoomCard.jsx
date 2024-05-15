@@ -35,10 +35,10 @@ const RoomCard = ({room}) => {
   const status = canJoin ? 'Waiting' : 'Game in progress';
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 w-80 flex flex-col">
-      <h4 className="text-xl font-semibold mb-2">{room.name}</h4>
-      <p className="text-gray-600 mb-2">{status}</p>
-      <p className="text-gray-600 mb-2">
+    <div className="bg-neutral text-neutral-content rounded-lg shadow-md p-4 w-80 flex flex-col">
+      <h4 className="text-primary text-xl font-semibold mb-2">{room.name}</h4>
+      <p className="mb-2">{status}</p>
+      <p className="mb-2">
         {room &&  `${room.users.length} / 4 players`}
       </p>
 
@@ -46,7 +46,7 @@ const RoomCard = ({room}) => {
         {/* Icon for join button */}
         <button
           onClick={handleJoinRoom}
-          className={`bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 flex items-center ${!canJoin ? 'cursor-not-allowed opacity-50' : ''}`}
+          className={`bg-primary text-primary-content py-2 px-4 rounded-md flex items-center ${!canJoin ? 'cursor-not-allowed opacity-50' : ''}`}
           disabled={canJoin ? false : true}
         >
           {loading ? <div className='loading loading-spinner'></div> : <div><FiLogIn className="mr-1" /> Join</div>}
