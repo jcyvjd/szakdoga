@@ -47,34 +47,13 @@ const useListenGame = () => {
 
     useEffect( () => {
         try {
-            console.log("Socketes useEffect")
             if(authUser && socket){
-                fetchRooms();
-                console.log("fetchRooms utan")
-                const room = rooms.find(room => room._id === authUser.roomId) || null;
-                console.log("SOCKETELES Room: ",room)
-                if(room && room.gameId){
-                    getGame(room.gameId);
-                    console.log("getGame utan")
-                }
+                getGame(authUser.roomId);
             }
         } catch (error) {
             toast.error(error.message)
         }
     },[socket]);
-
-    useEffect(() => {
-        console.log("Updated authUser: ", authUser);
-      }, [authUser]);
-
-    const fetchRooms = async() => {
-        try {
-            await getRooms();
-            console.log("fetchRooms utan")
-           } catch (error) {
-             console.error('Failed to get rooms:', error);
-        }
-    };
 }
 
 export default useListenGame;

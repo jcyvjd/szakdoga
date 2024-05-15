@@ -48,7 +48,7 @@ const useGame = () => {
 
       const getGame = async (roomId) => {
         try {
-          const response = await fetch(`/api/game/getGame/${roomId}`, {
+          const response = await fetch(`/api/game/get/${roomId}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
           });

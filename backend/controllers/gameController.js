@@ -536,16 +536,26 @@ export const takeTiles = async (req, res) => {
 //Send back the game
 export const getGame = async (req, res) => {
     try {
-        const {roomId} = req.params;
+        console.log("getGame")
+        const roomId = req.params.id;
+        console.log("roomId: ", req.params);
+        console.log("roomId: ", roomId);
         const game = await Game.findOne({ roomId: roomId }).populate('playerBoards');
 
         if (!game) {
             return res.status(404).json({ error: "No such game" });
         }
-        const populatedGame = await Game.findById(game._id).populate('playerBoards');
+        const populatedGame = await Game.findById(game._id).populate({
+            path: 'playerBoards',
+            populate: {
+              path: 'playerId',
+              model: 'User' 
+            }
+          });
         for (const userId of game.players) {
             const receiverSocketId = getReceiverSocketId(userId);
             io.to(receiverSocketId).emit("GetGame", populatedGame );
+            io.to(receiverSocketId).emit("UpdateGame", populatedGame );
         }
 
         res.status(200).json(game);
