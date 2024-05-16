@@ -82,7 +82,7 @@ export const setupGame = async (req, res) => {
         newGame = await Game.create({
             roomId: room._id,
             players: room.users,
-            playerToMove: room.owner,
+            playerToMove: room.users[0],
             bag,
             markets,
             sharedMarket,
@@ -543,7 +543,7 @@ export const getGame = async (req, res) => {
         const game = await Game.findOne({ roomId: roomId }).populate('playerBoards');
 
         if (!game) {
-            return res.status(404).json({ error: "No such game" });
+            return //res.status(404).json({ error: "No such game" });
         }
         const populatedGame = await Game.findById(game._id).populate({
             path: 'playerBoards',

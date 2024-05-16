@@ -20,7 +20,7 @@ const Session = () => {
   const { authUser } = useAuthContext();
   const { roomId } = useParams();
   const { rooms, setRooms } = useRoomContext();
-  const { leaveRoom, loading } = useJoinRoom();
+  const { leaveRoom, getRooms, loading } = useJoinRoom();
   const { gameState, setGameState } = useGameContext();
   const { setupGame, startGame,getGame, takeTiles } = useGame();
   const { socket, setSocket } = useSocketContext();
@@ -38,13 +38,13 @@ const Session = () => {
   //const [room, setRoom] = useState();
 
   //setRoom(rooms.find(room => room._id === roomId) || null);
-  let room = (rooms.find(room => room._id === roomId) || null);
-  console.log("SESSION rooms: ",rooms)  
+  let  room = (rooms.find(room => room._id === authUser.roomId) || null);
+  console.log("SESSION rooms: ",rooms)   
   console.log("SESSION room: ",room)
 
-  useEffect(() => {
-    getGame(roomId);
-  },[room]);
+  // useEffect(() => {
+  //   getGame(roomId);
+  // },[room]);
 
   const handleLeaveRoom = async () => {
     if (!authUser) {
@@ -124,19 +124,10 @@ const Session = () => {
     return allPlayersReady;
   };
 
-  useEffect(() => {//cleares previous gameState when component mounts
-    console.log("EFFECT")
-    //getGame(roomId);
-    if(gameState && gameState.roomId !== roomId){
-      setGameState(null);
-      setFinalPlayedBoards([]);
-    }
-    if(room && room.gameId){
-      console.log("EFFECT ROOMID: ",room._id)
-      //getGame(room._id);
-    }
+  useEffect(() => {
+    getRooms();
+    getGame(authUser.roomId);
 
-    room = rooms.find(room => room._id === roomId) || null;
   },[]);
 
   useEffect(() => {

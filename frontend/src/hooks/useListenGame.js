@@ -45,15 +45,19 @@ const useListenGame = () => {
         };
     }, [socket, gameState, setGameState]);
 
-    useEffect( () => {
-        try {
-            if(authUser && socket){
-                getGame(authUser.roomId);
-            }
-        } catch (error) {
-            toast.error(error.message)
-        }
-    },[socket]);
+    // useEffect( () => {
+    //     try {
+    //         if(authUser && socket){
+    //             console.log("eU rooms: ",rooms)
+    //             // if(rooms.length === 0){
+    //             //     getRooms();
+    //             // }
+    //             getGame(authUser.roomId);
+    //         }
+    //     } catch (error) {
+    //         toast.error(error.message)
+    //     }
+    // },[socket]);
 }
 
 export default useListenGame;

@@ -13,6 +13,7 @@ const gameSchema = new mongoose.Schema({
     playerToMove:{
         type :mongoose.Schema.Types.ObjectId,
         ref : 'User',
+        default : null
     },
     bag : {
         type: [String],
