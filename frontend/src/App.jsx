@@ -16,7 +16,7 @@ function App() {
   return (
     <>
       <Navbar/>
-      <div className='p-4 h-screen overflow-hidden'>
+      <div className='p-4 h-[calc(100vh-4rem)] overflow-hidden'>
         <Routes>
           
               <Route path="/" element={(authUser && authUser.roomId) ?<Navigate to={`/session/:roomId`} /> :

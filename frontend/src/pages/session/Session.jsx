@@ -179,7 +179,7 @@ const Session = () => {
         </div>
       </div>
       {/* Right side content */}
-      <div className="w-2/3 p-4 md:ml-1/3 absolute right-0">
+      <div className="w-2/3 p-4 md:ml-1/3 absolute right-0 flex items-center justify-center">
         {/* Status Board */}
         {!gameState && room && room.users.length > 0 && (
           <div className="h-full flex justify-center items-center">

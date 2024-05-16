@@ -34,12 +34,8 @@ const Chatbox = () => {
             <span className="">Chat:</span>{" "}
             <span className="font-bold">{roomName}</span>
           </div>
-          <div className="overflow-auto flex-grow">
             <Messages />
-          </div>
-          <div className="border-t border-gray-400"> 
             <MessageInput />
-          </div>
         </div>
       </div>
     );

@@ -24,15 +24,15 @@ const HomeSideBar = ({ rooms }) => {
   };
 
   return (
-    <div className="">
-      <div className="">
+    <div className="w-full">
+      <div className="w-full">
         <div className="mb-4">
           <input
             type="text"
             placeholder="Search rooms..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="w-full md:w-1/2 p-2 border placeholder-neutral-content bg-primary border-primary-content text-primary-content rounded-md"
+            className="w-full p-2 border placeholder-neutral-content bg-primary border-primary-content text-primary-content rounded-md"
           />
           {searchQuery && (
             <button
@@ -44,11 +44,11 @@ const HomeSideBar = ({ rooms }) => {
           )}
         </div>
       </div>
-      <div className="flex flex-col gap-4 mt-4 pt-4 overflow-auto no-scrollbar" style={{ maxHeight: '80vh' }} >
-        {filteredRooms.map((room) => (
-          <RoomCard key={room._id} room={room} />
-        ))}
-      </div>
+      <div className="flex flex-col gap-4 overflow-auto no-scrollbar" style={{ maxHeight: 'calc(100vh - 12rem)' }} >
+  {filteredRooms.map((room) => (
+    <RoomCard key={room._id} room={room} className="w-full" />
+  ))}
+</div>
     </div>
   );
 };

@@ -7,34 +7,48 @@ const StatusBoard = ({ users, authUserId, onToggleReady }) => {
   }
 
   return (
-    <div className="status-board w-full max-w-md bg-gray-200 p-4 rounded-lg">
-      {users.map((user) => (
-        <div key={user._id} className="flex justify-between items-center mb-2">
-          <span className="mr-2">{user.username}:</span>
-          {authUserId === user._id ? (
-            <button
-              className={`px-2 py-1 rounded ${
-                user.status !== 'ready'
-                  ? 'bg-red-500 text-white'
-                  : 'bg-green-500 text-white'
-              }`}
-              onClick={onToggleReady}
-            >
-              {user.status !== 'ready' ? 'Not Ready' : 'Ready'}
-            </button>
-          ) : (
-            <span
-              className={`px-2 py-1 rounded ${
-                user.status !== 'ready'
-                  ? 'bg-red-500 text-white'
-                  : 'bg-green-500 text-white'
-              }`}
-            >
-              {user.status !== 'ready' ? 'Not Ready' : 'Ready'}
-            </span>
-          )}
-        </div>
-      ))}
+    <div className="overflow-x-auto">
+      <table className="table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user, index) => (
+            <tr key={user._id} className="hover">
+              <th>{index + 1}</th>
+              <td>{user.username}</td>
+              <td>
+                {authUserId === user._id ? (
+                  <button
+                    className={`px-2 py-1 rounded ${
+                      user.status !== 'ready'
+                        ? 'bg-red-500 text-white'
+                        : 'bg-green-500 text-white'
+                    }`}
+                    onClick={onToggleReady}
+                  >
+                    {user.status !== 'ready' ? 'Not Ready' : 'Ready'}
+                  </button>
+                ) : (
+                  <span
+                    className={`px-2 py-1 rounded ${
+                      user.status !== 'ready'
+                        ? 'bg-red-500 text-white'
+                        : 'bg-green-500 text-white'
+                    }`}
+                  >
+                    {user.status !== 'ready' ? 'Not Ready' : 'Ready'}
+                  </span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

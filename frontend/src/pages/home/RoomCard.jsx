@@ -16,10 +16,7 @@ const RoomCard = ({room}) => {
     if(!authUser){
       return
     }
-    console.log("room: ",room)
-    console.log("users.length: ",room.users.length) 
-    console.log("users.length < 4: ",room.users.length < 4) 
-    console.log("canJoin: ",canJoin)
+    
     await joinRoom(room);
   }
 
@@ -35,7 +32,7 @@ const RoomCard = ({room}) => {
   const status = canJoin ? 'Waiting' : 'Game in progress';
 
   return (
-    <div className="bg-neutral text-neutral-content rounded-lg shadow-md p-4 w-full md:w-80 flex flex-col">
+    <div className="bg-neutral text-neutral-content rounded-lg shadow-md p-4 w-full flex flex-col">
       <h4 className="text-primary text-xl font-semibold mb-2">{room.name}</h4>
       <p className="mb-2">{status}</p>
       <p className="mb-2">

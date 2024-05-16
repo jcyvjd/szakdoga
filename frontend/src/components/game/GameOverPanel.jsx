@@ -18,19 +18,28 @@ const GameOverPanel = ({ playerBoards }) => {
   };
 
   return (
-    <div className="w-full max-w-md bg-gray-200 p-4 rounded-lg">
-      <h2 className="text-lg font-bold mb-4">Game Over</h2>
-      <div>
-        {playerBoards
-          .slice()
-          .sort((a, b) => b.points - a.points)
-          .map((player, index) => (
-            <div key={index} className="flex justify-between items-center mb-2">
-              <span>{index + 1}. {player.playerId.username}</span>
-              <span>Points: {player.points}</span>
-            </div>
-          ))}
-      </div>
+    <div className="overflow-x-auto">
+      <table className="table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Player</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {playerBoards
+            .slice()
+            .sort((a, b) => b.points - a.points)
+            .map((player, index) => (
+              <tr key={index} className="hover">
+                <th>{index + 1}</th>
+                <td>{player.playerId.username}</td>
+                <td>{player.points}</td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
       <button
         onClick={handleLeaveRoom}
         className="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
