@@ -38,7 +38,6 @@ const Session = () => {
   //const [room, setRoom] = useState();
 
   //setRoom(rooms.find(room => room._id === roomId) || null);
-<<<<<<< HEAD
   let room = (rooms.find(room => room._id === roomId) || null);
   console.log("SESSION rooms: ",rooms)  
   console.log("SESSION room: ",room)
@@ -46,9 +45,6 @@ const Session = () => {
   useEffect(() => {
     getGame(roomId);
   },[room]);
-=======
-  let room = rooms.find((room) => room._id === roomId) || null;
->>>>>>> 15ada30 (improvements, but fcked up message box)
 
   const handleLeaveRoom = async () => {
     if (!authUser) {
