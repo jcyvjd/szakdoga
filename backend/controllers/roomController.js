@@ -6,7 +6,7 @@ import Game from "../models/game/gameModel.js"
 
 export const getRooms = async (req, res) => {
     try {
-        const allRooms = await Room.find().sort({ createdAt: -1 });
+        const allRooms = await Room.find().populate("users").sort({ createdAt: -1 });
 
         res.status(200).json(allRooms)
 

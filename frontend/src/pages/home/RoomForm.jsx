@@ -35,6 +35,7 @@ const RoomForm = () => {
     }
 
     if (response.ok) {
+      authUser.roomId = json._id;
       await joinRoom(json);
       setRoomName("");
       setRooms([...rooms, json]);

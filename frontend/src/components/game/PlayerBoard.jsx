@@ -1,5 +1,6 @@
 import React from 'react';
 import { useGameContext } from '../../context/GameContext';
+import { useAuthContext} from '../../context/AuthContext';
 
 import tile_red from '../../assets/tiles/tile_red.png';
 import tile_blue from '../../assets/tiles/tile_blue.png';
@@ -21,6 +22,7 @@ const PlayerBoardCard = ({ playerBoard, onCollectedTilesClick }) => {
   const { playerId, points, collectedTiles, wallTiles, floorTiles } = playerBoard;
   const name = playerId.username;
   const { gameState } = useGameContext();
+  const { authUser } = useAuthContext();
 
   const tileColors = {
     empty: '#ccc',
@@ -49,9 +51,17 @@ const PlayerBoardCard = ({ playerBoard, onCollectedTilesClick }) => {
   };
 
   const isPlayerTurn = gameState && gameState.playerToMove.toString() === playerBoard.playerId._id.toString();
+  const isAuthUser = authUser._id.toString() === playerBoard.playerId._id.toString();
+
+  let borderColor = '';
+  if (isAuthUser) {
+    borderColor = isPlayerTurn ? 'border-green-500' : '';
+  } else {
+    borderColor = isPlayerTurn ? 'border-red-500' : '';
+  }
 
   return (
-    <div className={`bg-white rounded-lg shadow-md p-4 w-80 flex flex-col ${isPlayerTurn ? 'border-yellow-500 border-2' : ''}`}>
+    <div className={`bg-white rounded-lg shadow-md p-4 w-80 flex flex-col ${borderColor} border-2`}>
       {/* Top section: Points and Player ID */}
       <div className="flex justify-between mb-2">
         <div>
@@ -120,7 +130,7 @@ const PlayerBoardCard = ({ playerBoard, onCollectedTilesClick }) => {
         {floorTiles.map((tile, index) => (
           <div 
             key={index} 
-            className={`w-6 h-6 rounded-md`} 
+            className={`w-6 h-6 rounded-md relative`} 
             style={{
               border: '1px solid #ddd',
               backgroundImage: tile === 'empty' ? 'none' : `url(${tileImages[tile]})`,
@@ -129,7 +139,13 @@ const PlayerBoardCard = ({ playerBoard, onCollectedTilesClick }) => {
               cursor: 'pointer',
             }}  
             onClick={() => onCollectedTilesClick(-1)}
-          />
+          >
+            {tile === 'empty' && (
+              <div className="absolute inset-0 flex items-center justify-center text-xs text-white z-10">
+                {index < 2 ? "-1" : index < 5 ? "-2" : "-3"}
+              </div>
+            )}
+          </div>
         ))}
       </div>
     </div>

@@ -42,16 +42,13 @@ const Session = () => {
   console.log("SESSION rooms: ",rooms)   
   console.log("SESSION room: ",room)
 
-  // useEffect(() => {
-  //   getGame(roomId);
-  // },[room]);
-
   const handleLeaveRoom = async () => {
     if (!authUser) {
       return;
     }
     console.log("handleLeaveRoom elott: ", room.users);
     await leaveRoom(room);
+    setGameState(null);
     console.log("handleLeaveRoom utan: ", room.users);
   };
 
@@ -156,7 +153,7 @@ const Session = () => {
   return (
     <div className="flex h-screen">
       {/* Left side panel */}
-      <div className="w-full md:w-1/3 flex flex-col pt-15 overflow-y-auto">
+      <div className="w-full h-screen pb-20 fixed md:w-1/3 flex flex-col pt-15">
         <div className="flex flex-col space-y-4 p-4">
           <button
             onClick={handleLeaveRoom}
@@ -182,7 +179,7 @@ const Session = () => {
         </div>
       </div>
       {/* Right side content */}
-      <div className="w-2/3 p-4">
+      <div className="w-2/3 p-4 md:ml-1/3 absolute right-0">
         {/* Status Board */}
         {!gameState && room && room.users.length > 0 && (
           <div className="h-full flex justify-center items-center">
@@ -200,8 +197,8 @@ const Session = () => {
           </div>
         )}
         {/* PGame Board? */}
-        {gameState && (
-          <div className="grid grid-rows-3 grid-cols-2 gap-4">
+        {gameState && !gameOver && (
+          <div className="grid grid-rows-3 grid-cols-2 gap-2">
             {/* First row */}
             {gameState.playerBoards[2] && (
               <div className="row-start-1 col-start-1">
@@ -229,15 +226,19 @@ const Session = () => {
                       marketId={index}
                       tiles={market}
                       onTileClick={handleTileClick}
+                      selectedTile={selectedTile}
+                      selectedMarket={selectedMarket}
                     />
                   </div>
                 ))}
-                <div className="w-full">
+                <div className="w-fit">
                   <div className="m-2">
                     <SharedMarket
                       key={-1}
                       tiles={gameState.sharedMarket}
                       onTileClick={(tile) => handleTileClick(tile, -1)}
+                      selectedTile={selectedTile}
+                      selectedMarket={selectedMarket}
                     />
                   </div>
                 </div>

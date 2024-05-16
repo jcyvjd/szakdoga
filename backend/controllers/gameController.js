@@ -352,6 +352,9 @@ const onRoundOver = async (game) => {
 
         //socketelni kell
         //temp megoldas
+        game.status = "ended";
+        await game.save();
+
         const populatedGame = await Game.findById(game._id)
         .populate({
             path: 'playerBoards',
@@ -360,11 +363,10 @@ const onRoundOver = async (game) => {
                 model: 'User' 
             }
         });
-        await game.save();
 
-        if(isGameOver(game)){
+        //if(isGameOver(game)){
             console.log("Game is over");
-            //if(true){
+            if(true){
             for (const userId of game.players) {
                 const receiverSocketId = getReceiverSocketId(userId);
                 io.to(receiverSocketId).emit("GameOver",  populatedGame );
@@ -543,6 +545,10 @@ export const getGame = async (req, res) => {
         const game = await Game.findOne({ roomId: roomId }).populate('playerBoards');
 
         if (!game) {
+            const receiverSocketId = getReceiverSocketId(req.user._id);
+            io.to(receiverSocketId).emit("GetGame", null );
+            io.to(receiverSocketId).emit("UpdateGame", null );
+            
             return //res.status(404).json({ error: "No such game" });
         }
         const populatedGame = await Game.findById(game._id).populate({

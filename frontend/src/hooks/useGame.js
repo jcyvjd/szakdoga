@@ -54,6 +54,7 @@ const useGame = () => {
           });
           const data = await response.json();
           if (data.error) throw new Error(data.error);
+          console.log("getGame data: ", data);
           return data;
         } catch (error) {
           toast.error(`Error getting game: ${error.message}`);

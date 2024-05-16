@@ -44,7 +44,7 @@ const HomeSideBar = ({ rooms }) => {
           )}
         </div>
       </div>
-      <div className="flex flex-col gap-4 mt-4 pt-4">
+      <div className="flex flex-col gap-4 mt-4 pt-4 overflow-auto no-scrollbar" style={{ maxHeight: '80vh' }} >
         {filteredRooms.map((room) => (
           <RoomCard key={room._id} room={room} />
         ))}
