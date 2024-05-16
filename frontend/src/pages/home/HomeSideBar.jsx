@@ -24,20 +24,20 @@ const HomeSideBar = ({ rooms }) => {
   };
 
   return (
-    <div className="relative overflow-y-auto h-full">
-      <div className="sticky top-0 z-10">
+    <div className="">
+      <div className="">
         <div className="mb-4">
           <input
             type="text"
             placeholder="Search rooms..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="p-2 border placeholder-neutral-content bg-primary border-primary-content text-primary-content rounded-md w-1/2"
+            className="w-full md:w-1/2 p-2 border placeholder-neutral-content bg-primary border-primary-content text-primary-content rounded-md"
           />
           {searchQuery && (
             <button
               onClick={handleClearSearch}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2"
+              className="right-2 top-1/2 transform -translate-y-1/2"
             >
               <MdClear />
             </button>

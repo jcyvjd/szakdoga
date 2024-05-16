@@ -41,8 +41,8 @@ const Home = () => {
 
   return (
 
-    <div className="flex md:flex">
-      <div className="w-full md:w-1/2 justify-center">
+    <div className="md:flex">
+      <div className="w-full md:w-1/2">
         <RoomForm />
       </div>
       <div className="w-full md:w-1/2 pt-10">

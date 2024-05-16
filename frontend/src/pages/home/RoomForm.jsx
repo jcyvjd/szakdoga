@@ -42,7 +42,7 @@ const RoomForm = () => {
   };
 
   return (
-    <div className="w-1/2 bg-primary text-primary-content rounded-lg shadow-md p-4 flex justify-center items-center">
+    <div className="w-full md:w-1/2 bg-primary text-primary-content rounded-lg shadow-md p-4 flex justify-center items-center">
       <form onSubmit={handleSubmit} className="w-full">
         <h3 className="text-lg font-semibold mb-4">Add a New Room</h3>
         <input
