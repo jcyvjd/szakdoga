@@ -32,7 +32,7 @@ const HomeSideBar = ({ rooms }) => {
             placeholder="Search rooms..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="w-full p-2 border placeholder-neutral-content bg-primary border-primary-content text-primary-content rounded-md"
+            className=" w-full md:w-1/2 p-2 border placeholder-neutral-content bg-primary border-primary-content text-primary-content rounded-md"
           />
           {searchQuery && (
             <button
