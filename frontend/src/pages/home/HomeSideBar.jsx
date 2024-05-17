@@ -24,7 +24,7 @@ const HomeSideBar = ({ rooms }) => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full flex flex-col"> {/* Add h-full and flex here */}
       <div className="w-full">
         <div className="mb-4">
           <input
@@ -44,13 +44,13 @@ const HomeSideBar = ({ rooms }) => {
           )}
         </div>
       </div>
-      <div className="flex flex-col gap-4 overflow-auto no-scrollbar" style={{ maxHeight: 'calc(100vh - 12rem)' }} >
-  {filteredRooms.map((room) => (
-    <RoomCard key={room._id} room={room} className="w-full" />
-  ))}
-</div>
+      <div className="flex flex-col gap-4 overflow-auto no-scrollbar flex-grow"> {/* Add flex-grow here */}
+        {filteredRooms.map((room) => (
+          <RoomCard key={room._id} room={room} className="w-full" />
+        ))}
+      </div>
     </div>
   );
-};
+}
 
 export default HomeSideBar;

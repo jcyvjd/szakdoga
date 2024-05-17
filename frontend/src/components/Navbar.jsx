@@ -11,7 +11,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-base-200 text-base-content flex justify-between fixed bottom-0 w-full">
+      <nav className="bg-base-200 text-base-content flex justify-between  w-full">
         {<img src={logo} alt="Azul_Logo" className="relative -left-10 h-20" />}
         {authUser && (
           <div className="flex items-center">
