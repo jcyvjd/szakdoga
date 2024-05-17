@@ -15,6 +15,9 @@ import useListenRooms from "../../hooks/useListenRooms";
 import { useEffect, useState } from "react";
 import StatusBoard from "../../components/game/StatusBoard";
 import GameOverPanel from "../../components/game/GameOverPanel";
+import { Collapse, Ripple, initTWE } from "tw-elements";
+
+initTWE({ Collapse, Ripple });
 
 const Session = () => {
   const { authUser } = useAuthContext();
@@ -22,7 +25,7 @@ const Session = () => {
   const { rooms, setRooms } = useRoomContext();
   const { leaveRoom, getRooms, loading } = useJoinRoom();
   const { gameState, setGameState } = useGameContext();
-  const { setupGame, startGame,getGame, takeTiles } = useGame();
+  const { setupGame, startGame, getGame, takeTiles } = useGame();
   const { socket, setSocket } = useSocketContext();
   useListenGame();
   useListenRooms();
@@ -38,9 +41,9 @@ const Session = () => {
   //const [room, setRoom] = useState();
 
   //setRoom(rooms.find(room => room._id === roomId) || null);
-  let  room = (rooms.find(room => room._id === authUser.roomId) || null);
-  console.log("SESSION rooms: ",rooms)   
-  console.log("SESSION room: ",room)
+  let room = rooms.find((room) => room._id === authUser.roomId) || null;
+  console.log("SESSION rooms: ", rooms);
+  console.log("SESSION room: ", room);
 
   const handleLeaveRoom = async () => {
     if (!authUser) {
@@ -123,8 +126,7 @@ const Session = () => {
   useEffect(() => {
     getRooms();
     getGame(authUser.roomId);
-
-  },[]);
+  }, []);
 
   useEffect(() => {
     socket?.on("GameOver", (data) => {
@@ -150,39 +152,53 @@ const Session = () => {
   console.log("game state ", gameState);
 
   return (
-    <div className="h-full flex flex-col">
+    <div>
+    <a
+      className="lg:hidden text-center block rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
+      data-twe-collapse-init
+      data-twe-ripple-init
+      data-twe-ripple-color="light"
+      href="#collapseExample"
+      role="button"
+      aria-expanded="false"
+      aria-controls="collapseExample"
+    >
+      Menu
+    </a>
       {/* Main content area */}
-      <div className="flex-grow h-full flex overflow-hidden">
+      <div className="lg:flex">
         {/* Left side panel */}
-        <div className="w-full md:w-1/3 h-full flex flex-col p-4">
-          <div className="flex h-full flex-col space-y-4">
-            <div className="flex-grow">
+        <div
+          className="collapse w-full lg:flex lg:w-1/3 hidden h-full flex-col p-4 space-y-2 "
+          id="collapseExample"
+          data-twe-collapse-item
+        >
+          <div className="flex-grow">
+            <button
+              onClick={handleLeaveRoom}
+              className="inline-flex w-1/2 mr-1 items-center bg-base-300 text-base-content py-2 px-4 rounded-md"
+            >
+              <FiLogOut className="mr-1" /> Leave Room
+            </button>
+            {!gameState && (
               <button
-                onClick={handleLeaveRoom}
-                className="flex items-center bg-base-300 text-base-content py-2 px-4 rounded-md"
+                onClick={handleToggleReady}
+                className={`inline-flex w-2/5 items-center py-2 px-4 rounded-md ${
+                  playerReady
+                    ? "bg-success text-success-content"
+                    : "bg-base-200 text-base-content"
+                }`}
               >
-                <FiLogOut className="mr-1" /> Leave Room
+                {playerReady ? "Ready" : "Not Ready"}
               </button>
-              {!gameState && !gameOver && (
-                <button
-                  onClick={handleToggleReady}
-                  className={`flex items-center py-2 px-4 rounded-md ${
-                    playerReady
-                      ? "bg-success text-success-content"
-                      : "bg-base-200 text-base-content"
-                  }`}
-                >
-                  {playerReady ? "Ready" : "Not Ready"}
-                </button>
-              )}
-            </div>
-            <div className="flex-grow h-full">
-              <Chatbox />
-            </div>
+            )}
+          </div>
+          <div className="flex-grow h-full">
+            <Chatbox />
           </div>
         </div>
         {/* Right side content */}
-        <div className="w-full md:w-2/3 flex flex-col items-center justify-center p-4 overflow-y-auto">
+        <div className="w-full lg:w-2/3 flex lg:flex-col items-center justify-center p-4">
           {/* Status Board */}
           {!gameState && !gameOver && room && room.users.length > 0 && (
             <div className="h-full flex justify-center items-center">
@@ -268,8 +284,6 @@ const Session = () => {
       </div>
     </div>
   );
-  
-  
 };
 
 export default Session;
