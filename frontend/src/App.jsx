@@ -14,7 +14,7 @@ function App() {
 
   return (
     <div className='h-screen flex flex-col'>
-      <div className='flex-grow overflow-hidden p-4'> 
+      <div className='flex-grow overflow-hidden p-4 pb-0'> 
         <Routes>
           <Route path="/" element={(authUser && authUser.roomId) ? <Navigate to={`/session/:roomId`} /> :
             (authUser ? <Home /> : <Navigate to="/login" />)

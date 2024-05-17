@@ -1,10 +1,14 @@
 import React, { useState } from 'react'
 import { useAuthContext } from '../context/AuthContext'
+import { useRoomContext } from '../context/RoomContext'
+import useJoinRoom from './useJoinRoom'
 import toast from 'react-hot-toast'
 
 const useLogout = () => {
     const [loading, setLoading] = useState(false)
     const {authUser, setAuthUser} =  useAuthContext()
+    const { rooms } = useRoomContext()
+    const {leaveRoom} = useJoinRoom()
 
     const logout = async () =>{
         setLoading(true)

@@ -153,11 +153,11 @@ const Session = () => {
   return (
     <div className="h-full flex flex-col">
       {/* Main content area */}
-      <div className="flex-grow flex overflow-hidden">
+      <div className="flex-grow h-full flex overflow-hidden">
         {/* Left side panel */}
         <div className="w-full md:w-1/3 h-full flex flex-col p-4">
           <div className="flex h-full flex-col space-y-4">
-            <div>
+            <div className="flex-grow">
               <button
                 onClick={handleLeaveRoom}
                 className="flex items-center bg-base-300 text-base-content py-2 px-4 rounded-md"

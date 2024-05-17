@@ -551,6 +551,11 @@ export const getGame = async (req, res) => {
             
             return //res.status(404).json({ error: "No such game" });
         }
+        if(game.roomId !== roomId){
+            return //ha veletlen a user benne maradt volna egy jatekba
+        }
+
+        
         const populatedGame = await Game.findById(game._id).populate({
             path: 'playerBoards',
             populate: {
