@@ -56,8 +56,7 @@ const Session = () => {
     if (!authUser) {
       return;
     }
-    console.log("authUser: ", authUser);
-    console.log("room: ", room);
+    console.log("SETUP");
     if (room && room.users[0]._id === authUser._id) {
       await setupGame();
     }
@@ -164,7 +163,7 @@ const Session = () => {
               >
                 <FiLogOut className="mr-1" /> Leave Room
               </button>
-              {!gameState && (
+              {!gameState && !gameOver && (
                 <button
                   onClick={handleToggleReady}
                   className={`flex items-center py-2 px-4 rounded-md ${
@@ -185,7 +184,7 @@ const Session = () => {
         {/* Right side content */}
         <div className="w-full md:w-2/3 flex flex-col items-center justify-center p-4 overflow-y-auto">
           {/* Status Board */}
-          {!gameState && room && room.users.length > 0 && (
+          {!gameState && !gameOver && room && room.users.length > 0 && (
             <div className="h-full flex justify-center items-center">
               <StatusBoard
                 users={room?.users}

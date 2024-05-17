@@ -3,6 +3,7 @@ import User from "../models/userModel.js"
 import mongoose from "mongoose"
 import { io } from "../socket/socket.js"
 import Game from "../models/game/gameModel.js"
+import { leaveCurrentGame, deleteGame } from "./gameController.js"
 
 export const getRooms = async (req, res) => {
     try {
@@ -114,23 +115,32 @@ export const leaveRoom = async (req,res) => {
         const loggedInUserId = req.user._id
         const roomId = req.params.id
 
-        await User.findOneAndUpdate(
+        const usr = await User.findOneAndUpdate(
             { _id: loggedInUserId },
             { roomId: null, status: 'online' }, 
             { new: true }
         )
+        if(!usr){
+            return res.status(400).json({error:"No user found with such id"})
+        }
 
         const room = await Room.findOneAndUpdate(
             { _id: roomId },
-            { $pull: { users: loggedInUserId }}, // $addToSet adds to array if not already present
+            { $pull: { users: loggedInUserId }}, 
             { new: true } // to return the updated room document
         ).populate("users")
+
         if(!room){
             return res.status(400).json({error:"No room found with such id"})
         }
+        if(room.gameId){
+            leaveCurrentGame(loggedInUserId);
+        }
+
         if(room.users.length === 0){
             await Room.findByIdAndDelete(roomId);
             io.emit("deleteRoom", room);
+            deleteGame(room.gameId);
         }
         //SOCKET IO
         io.emit("updateRoom", room)

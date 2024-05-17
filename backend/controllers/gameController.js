@@ -139,6 +139,9 @@ const startNewRound = async (game) => {
         if (!game) {
             throw new Error("No game found");
         }
+        if(game.markets.length === game.players.length + 3){
+            game.markets = newMarkets(game.players.length + 3);
+        }
         
         await loadMarkets(game);
         game.sharedMarket = ['white'];
@@ -555,7 +558,7 @@ export const getGame = async (req, res) => {
             return //ha veletlen a user benne maradt volna egy jatekba
         }
 
-        
+
         const populatedGame = await Game.findById(game._id).populate({
             path: 'playerBoards',
             populate: {
@@ -576,13 +579,67 @@ export const getGame = async (req, res) => {
     }
 };
 
-//deleting the game by id? or by user.roomId?
-export const deleteGame = async (req, res) => {
+export const leaveCurrentGame = async (userId) => {
     try {
-        const game = await Game.findOne({ roomId: req.user.roomId });
+        //find game user is in
+        const game = await Game.findOne({ players: userId }).populate('playerBoards');
+        if(!game){
+            return;
+        }
+
+        //find playerBoard, delete it and remove it from game
+        const playerBoard = await PlayerBoard.findOneAndDelete({ playerId: userId });
+        if(!playerBoard){ return; }
+        const index = game.playerBoards.findIndex(board => board.playerId.toString() === userId.toString());
+        if (index > -1) {
+            console.log("playerBoard deleted");
+            game.playerBoards.splice(index, 1);
+        }
+
+        //remove player from game, also change playerToMove if needed
+        if(game.playerToMove.toString() === userId.toString()){
+            game.playerToMove = game.players[(game.players.indexOf(userId) + 1) % game.players.length];
+        }
+        game.players = game.players.filter(player => player.toString() !== userId.toString());
+        
+
+        await game.save();
+
+        const populatedGame = await game.populate({
+            path: 'playerBoards',
+            populate: {
+              path: 'playerId',
+              model: 'User' 
+            }
+          });
+          console.log("populatedGame: ", populatedGame);
+
+        if(game.players.length > 1){
+            for (const _userId of game.players) {
+                const receiverSocketId = getReceiverSocketId(_userId);
+                io.to(receiverSocketId).emit("UpdateGame",  populatedGame );
+            }
+        }
+        else{
+            game.gameStatus = "ended";
+            for (const _userId of game.players) {
+                const receiverSocketId = getReceiverSocketId(_userId);
+                io.to(receiverSocketId).emit("GameOver",  populatedGame );
+            }
+        }
+    }
+    catch (error) {
+        console.log("Error in leaveGame: ", error.message);
+    }
+}
+
+//deleting the game by id? or by user.roomId?
+export const deleteGame = async (gameId) => {
+    try {
+        const game = await Game.findOne({ _id: gameId });
 
         if (!game) {
-            return res.status(404).json({ error: "No such game" });
+            return 
         }
 
         game.players.forEach(player => {
@@ -591,13 +648,12 @@ export const deleteGame = async (req, res) => {
                 user.save();
             });
         });
-        await Game.findOneAndDelete(req.params.id);
-        await Game.findByIdAndRemove(req.params.id);
 
-        return res.status(200).json({ message: "Game deleted successfully" });
+        await Game.findOneAndDelete({ _id: gameId });
+
+
     } catch (error) {
         console.log("Error in deleteGame: ", error.message);
-        res.status(500).json({ error: "Internal server error" });
     }
 }
 
