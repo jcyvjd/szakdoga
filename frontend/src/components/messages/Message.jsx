@@ -8,7 +8,7 @@ const Message = ({ message }) => {
 
     return (
         <div className={`message ${authUser.id === message.senderId ? "sent" : "received"}`}>
-            <p>{message.senderName}: {message.message}</p>
+            <p><i>{message.senderName}</i>: {message.message}</p>
         </div>
     );
 }

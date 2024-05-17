@@ -29,12 +29,12 @@ const Chatbox = () => {
       //   >
       //     Chat
       //   </button> 1 sorral lentro id="collapseExample" data-twe-collapse-item
-        <div className="flex flex-col" >
-          <div className="bg-neutral text-neutral-content px-4 py-2 mb-2 rounded-lg">
+        <div className="flex flex-col bg-base-200 text-base-content" >
+          <div className="bg-neutral text-neutral-content px-4 py-2 rounded-lg">
             <span className="">Chat:</span>{" "}
             <span className="font-bold">{roomName}</span>
           </div>
-          <div className="flex-grow flex flex-col">
+          <div className="pt-2 flex-grow flex flex-col">
             
               <Messages />
               

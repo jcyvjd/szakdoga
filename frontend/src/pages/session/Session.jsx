@@ -151,23 +151,22 @@ const Session = () => {
   console.log("game state ", gameState);
 
   return (
-    <div className="h-full flex flex-col">
+    <div>
       {/* Main content area */}
-      <div className="flex-grow h-full flex overflow-hidden">
+      <div className="md:flex">
         {/* Left side panel */}
-        <div className="w-full md:w-1/3 h-full flex flex-col p-4">
-          <div className="flex h-full flex-col space-y-4">
+        <div className="w-full md:w-1/3 h-full flex flex-col p-4 space-y-2 ">
             <div className="flex-grow">
               <button
                 onClick={handleLeaveRoom}
-                className="flex items-center bg-base-300 text-base-content py-2 px-4 rounded-md"
+                className="inline-flex w-1/2 mr-1 items-center bg-base-300 text-base-content py-2 px-4 rounded-md"
               >
                 <FiLogOut className="mr-1" /> Leave Room
               </button>
               {!gameState && (
                 <button
                   onClick={handleToggleReady}
-                  className={`flex items-center py-2 px-4 rounded-md ${
+                  className={`inline-flex w-2/5 items-center py-2 px-4 rounded-md ${
                     playerReady
                       ? "bg-success text-success-content"
                       : "bg-base-200 text-base-content"
@@ -180,10 +179,9 @@ const Session = () => {
             <div className="flex-grow h-full">
               <Chatbox />
             </div>
-          </div>
         </div>
         {/* Right side content */}
-        <div className="w-full md:w-2/3 flex flex-col items-center justify-center p-4 overflow-y-auto">
+        <div className="w-full md:w-2/3 flex md:flex-col items-center justify-center p-4">
           {/* Status Board */}
           {!gameState && room && room.users.length > 0 && (
             <div className="h-full flex justify-center items-center">
