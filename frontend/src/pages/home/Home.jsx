@@ -41,19 +41,11 @@ const Home = () => {
 
   return (
 
-<<<<<<< Updated upstream
-    <div className="md:flex h-full">
-      <div className="w-full md:w-1/2 pt-10">
-        <RoomForm />
-      </div>
-      <div className="w-full md:w-1/2 pt-10 ">
-=======
     <div className="md:flex">
       <div className="w-full md:h-screen md:w-1/2">
         <RoomForm />
       </div>
       <div className="md:w-1/2 pt-10">
->>>>>>> Stashed changes
         <HomeSideBar rooms={rooms} />
       </div>
     </div>
