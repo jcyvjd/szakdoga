@@ -3,6 +3,7 @@ import Room from "../models/roomModel.js"
 import bcrypt from "bcryptjs"
 import generateTokenAndSetCookie from "../utils/generateToken.js";
 import { io } from "../socket/socket.js"
+import Game from "../models/game/gameModel.js";
 
 export const signup = async (req, res) => {
     try{
@@ -77,7 +78,7 @@ export const logout = async (req, res) => {
         if(!current){
             return res.status(400).json({error:"User not found"})
         }
-
+        
         await Room.findOneAndUpdate(
             {_id: current.roomId},
             { $pull: { users: user._id }}, 
