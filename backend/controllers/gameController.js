@@ -71,6 +71,17 @@ export const setupGame = async (req, res) => {
 
         let newGame = await Game.findOne({ roomId: room._id });
         if (newGame) {
+            const populatedGame = await newGame.populate({
+                path: 'playerBoards',
+                populate: {
+                  path: 'playerId',
+                  model: 'User' 
+                }
+              });
+            for (const userId of room.users) {
+                const receiverSocketId = getReceiverSocketId(userId);
+                io.to(receiverSocketId).emit("NewGame",  populatedGame );
+            }
             return console.log("Game already exists");
         }
 
@@ -93,7 +104,7 @@ export const setupGame = async (req, res) => {
         await room.save();
         io.emit("updateRoom", room);
 
-        const populatedGame = await Game.findById(newGame._id).populate({
+        const populatedGame = await newGame.populate({
             path: 'playerBoards',
             populate: {
               path: 'playerId',
@@ -367,9 +378,9 @@ const onRoundOver = async (game) => {
             }
         });
 
-        //if(isGameOver(game)){
+        if(isGameOver(game)){
             console.log("Game is over");
-            if(true){
+            //if(true){
             for (const userId of game.players) {
                 const receiverSocketId = getReceiverSocketId(userId);
                 io.to(receiverSocketId).emit("GameOver",  populatedGame );

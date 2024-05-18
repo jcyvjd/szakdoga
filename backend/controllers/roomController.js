@@ -112,6 +112,7 @@ export const joinRoom = async (req,res) => {
 
 export const leaveRoom = async (req,res) => {
     try {
+        console.log("leaving room")
         const loggedInUserId = req.user._id
         const roomId = req.params.id
 

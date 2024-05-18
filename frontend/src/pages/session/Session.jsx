@@ -60,9 +60,11 @@ const Session = () => {
       return;
     }
     console.log("SETUP");
-    if (room && room.users[0]._id === authUser._id) {
+    if (room ) {
       await setupGame();
+      console.log("SETUP UTAN");
     }
+    setPlayerReady(false);
   };
 
   const handleTakeTiles = async (tile, market, row) => {
@@ -152,7 +154,7 @@ const Session = () => {
   console.log("game state ", gameState);
 
   return (
-    <div>
+    <div className="h-full">
     <a
       className="lg:hidden text-center block rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
       data-twe-collapse-init
@@ -166,7 +168,7 @@ const Session = () => {
       Menu
     </a>
       {/* Main content area */}
-      <div className="lg:flex">
+      <div className="lg:flex h-full overflow-hidden">
         {/* Left side panel */}
         <div
           className="collapse w-full lg:flex lg:w-1/3 hidden h-full flex-col p-4 space-y-2 "
@@ -198,7 +200,7 @@ const Session = () => {
           </div>
         </div>
         {/* Right side content */}
-        <div className="w-full lg:w-2/3 flex lg:flex-col items-center justify-center p-4">
+        <div className="w-full lg:w-2/3 flex lg:flex-col items-center justify-center">
           {/* Status Board */}
           {!gameState && !gameOver && room && room.users.length > 0 && (
             <div className="h-full flex justify-center items-center">
@@ -217,7 +219,7 @@ const Session = () => {
           )}
           {/* Game Board */}
           {gameState && !gameOver && (
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 h-full overflow-y-auto no-scrollbar">
               {/* Conditionally render first row */}
               {gameState.playerBoards[2] && (
                 <div className="row-start-1 col-start-1">
@@ -249,15 +251,13 @@ const Session = () => {
                       />
                     </div>
                   ))}
-                  <div className="w-fit">
-                    <div className="m-2">
+                  <div className="flex-grow m-1">
                       <SharedMarket
                         tiles={gameState.sharedMarket}
                         onTileClick={(tile) => handleTileClick(tile, -1)}
                         selectedTile={selectedTile}
                         selectedMarket={selectedMarket}
                       />
-                    </div>
                   </div>
                 </div>
               </div>

@@ -41,11 +41,11 @@ const Home = () => {
 
   return (
 
-    <div className="md:flex">
-      <div className="w-full md:h-screen md:w-1/2">
+    <div className="md:flex h-full">
+      <div className="w-full md:h-screen md:w-1/2 pb-10">
         <RoomForm />
       </div>
-      <div className="md:w-1/2 pt-10">
+      <div className="md:w-1/2 h-full">
         <HomeSideBar rooms={rooms} />
       </div>
     </div>

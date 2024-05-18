@@ -16,7 +16,7 @@ const Messages = () => {
 	}, [messages]);
 
     return(
-        <div className='px-4 flex-1 min-h-60 max-h-60 overflow-y-auto'>
+        <div className='px-4 flex-1 min-h-60 max-h-60 overflow-y-auto no-scrollbar'>
             {!loading &&
 				messages.length > 0 &&
 				messages.map((message) => (
