@@ -38,6 +38,7 @@ const Session = () => {
   const [playerReady, setPlayerReady] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [finalPlayedBoards, setFinalPlayedBoards] = useState([]);
+  const [ isPanelOpen, setIsPanelOpen ] = useState(false);
   //const [room, setRoom] = useState();
 
   //setRoom(rooms.find(room => room._id === roomId) || null);
@@ -128,6 +129,7 @@ const Session = () => {
   useEffect(() => {
     getRooms();
     getGame(authUser.roomId);
+    setIsPanelOpen(false);
   }, []);
 
   useEffect(() => {
@@ -154,8 +156,9 @@ const Session = () => {
   console.log("game state ", gameState);
 
   return (
-    <div className="h-full">
+    <div className="flex-grow">
     <a
+      onClick={() => setIsPanelOpen(!isPanelOpen)}
       className="lg:hidden text-center block rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
       data-twe-collapse-init
       data-twe-ripple-init
@@ -171,21 +174,21 @@ const Session = () => {
       <div className="lg:flex h-full overflow-hidden">
         {/* Left side panel */}
         <div
-          className="collapse w-full lg:flex lg:w-1/3 hidden h-full flex-col p-4 space-y-2 "
-          id="collapseExample"
-          data-twe-collapse-item
-        >
-          <div className="flex-grow">
+        className={`collapse w-full lg:flex lg:w-1/3 ${isPanelOpen ? 'flex' : 'hidden'} flex-grow flex-col p-4 space-y-2 `}
+        id="collapseExample"
+        data-twe-collapse-item
+      >
+          <div className="flex flex-grow">
             <button
               onClick={handleLeaveRoom}
-              className="inline-flex w-1/2 mr-1 items-center bg-base-300 text-base-content py-2 px-4 rounded-md"
+              className="inline-flex w-1/2 mr-1 justify-center items-center bg-base-300 text-base-content py-2 px-4 rounded-md"
             >
               <FiLogOut className="mr-1" /> Leave Room
             </button>
-            {!gameState && (
+            {!gameState && !gameOver && (
               <button
                 onClick={handleToggleReady}
-                className={`inline-flex w-2/5 items-center py-2 px-4 rounded-md ${
+                className={`inline-flex w-1/2 items-center justify-center py-2 px-4 rounded-md ${
                   playerReady
                     ? "bg-success text-success-content"
                     : "bg-base-200 text-base-content"
@@ -200,7 +203,7 @@ const Session = () => {
           </div>
         </div>
         {/* Right side content */}
-        <div className="w-full lg:w-2/3 flex lg:flex-col items-center justify-center">
+        <div className={`w-full lg:w-2/3 flex lg:flex-col items-center justify-center ${!isPanelOpen ? 'flex' : 'hidden'}`}>
           {/* Status Board */}
           {!gameState && !gameOver && room && room.users.length > 0 && (
             <div className="h-full flex justify-center items-center">

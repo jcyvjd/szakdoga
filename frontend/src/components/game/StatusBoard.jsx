@@ -24,7 +24,7 @@ const StatusBoard = ({ users, authUserId, onToggleReady }) => {
               <td>
                 {authUserId === user._id ? (
                   <button
-                    className={`px-2 py-1 rounded ${
+                    className={`w-24 text-center px-2 py-1 rounded ${
                       user.status !== 'ready'
                         ? 'bg-red-500 text-white'
                         : 'bg-green-500 text-white'
@@ -35,7 +35,7 @@ const StatusBoard = ({ users, authUserId, onToggleReady }) => {
                   </button>
                 ) : (
                   <span
-                    className={`px-2 py-1 rounded ${
+                    className={`w-24 text-center block px-2 py-1 rounded ${
                       user.status !== 'ready'
                         ? 'bg-red-500 text-white'
                         : 'bg-green-500 text-white'

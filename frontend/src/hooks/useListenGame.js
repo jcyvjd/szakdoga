@@ -3,18 +3,12 @@ import { useEffect } from "react";
 import { useSocketContext } from "../context/SocketContext";
 import { useGameContext } from "../context/GameContext";
 import { useAuthContext } from "../context/AuthContext";
-import useJoinRoom from "./useJoinRoom";
-import useGame from "./useGame";
 import toast from "react-hot-toast";
-import { useRoomContext } from "../context/RoomContext";
 
 const useListenGame = () => {
     const { authUser } = useAuthContext();
     const { socket } = useSocketContext();
     const { setGameState, gameState } = useGameContext();
-    const {rooms} = useRoomContext();
-    const { getGame } = useGame();
-    const { getRooms } = useJoinRoom();
 
     useEffect(() => {
         socket?.on("NewGame", (game) => {
@@ -44,20 +38,6 @@ const useListenGame = () => {
             socket?.off("GameOver");
         };
     }, [socket, gameState, setGameState]);
-
-    // useEffect( () => {
-    //     try {
-    //         if(authUser && socket){
-    //             console.log("eU rooms: ",rooms)
-    //             // if(rooms.length === 0){
-    //             //     getRooms();
-    //             // }
-    //             getGame(authUser.roomId);
-    //         }
-    //     } catch (error) {
-    //         toast.error(error.message)
-    //     }
-    // },[socket]);
 }
 
 export default useListenGame;
