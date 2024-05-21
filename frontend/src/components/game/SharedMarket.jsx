@@ -3,7 +3,7 @@ import React from 'react';
 import Tile from './Tile';
 
 const SharedMarket = ({ tiles, onTileClick, selectedTile, selectedMarket }) => (
-  <div className="flex flex-col items-center p-4 rounded-md">
+  <div id='-1' className="flex flex-col items-center p-4 rounded-md">
     <h2>Shared Market</h2>
     <div className="flex flex-wrap justify-center">
       {tiles.map((tile, index) => (
@@ -12,6 +12,7 @@ const SharedMarket = ({ tiles, onTileClick, selectedTile, selectedMarket }) => (
           tile={tile}
           onClick={() => onTileClick(tile)}
           isSelected = {selectedTile === tile && selectedMarket === -1}
+          id={`market-${-1}-tile-${index}`}
         />
       ))}
     </div>

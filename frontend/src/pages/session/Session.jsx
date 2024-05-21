@@ -156,7 +156,7 @@ const Session = () => {
   console.log("game state ", gameState);
 
   return (
-    <div className="flex-grow">
+    <div className="h-full flex flex-col">
     <a
       onClick={() => setIsPanelOpen(!isPanelOpen)}
       className="lg:hidden text-center block rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
@@ -168,10 +168,10 @@ const Session = () => {
       aria-expanded="false"
       aria-controls="collapseExample"
     >
-      Menu
+      {isPanelOpen ? "Back to Game" : "Menu"}
     </a>
       {/* Main content area */}
-      <div className="lg:flex h-full overflow-hidden">
+      <div className="lg:flex h-full overflow-auto no-scrollbar">
         {/* Left side panel */}
         <div
         className={`collapse w-full lg:flex lg:w-1/3 ${isPanelOpen ? 'flex' : 'hidden'} flex-grow flex-col p-4 space-y-2 `}
@@ -203,10 +203,10 @@ const Session = () => {
           </div>
         </div>
         {/* Right side content */}
-        <div className={`w-full lg:w-2/3 flex lg:flex-col items-center justify-center ${!isPanelOpen ? 'flex' : 'hidden'}`}>
+        <div className={`w-full lg:w-2/3 flex lg:flex-col overflow-auto items-center justify-center ${!isPanelOpen ? 'flex' : 'hidden'}`}>
           {/* Status Board */}
           {!gameState && !gameOver && room && room.users.length > 0 && (
-            <div className="h-full flex justify-center items-center">
+            <div className="flex-grow flex justify-center items-center">
               <StatusBoard
                 users={room?.users}
                 authUserId={authUser._id}
@@ -222,7 +222,7 @@ const Session = () => {
           )}
           {/* Game Board */}
           {gameState && !gameOver && (
-            <div className="grid grid-cols-2 gap-2 h-full overflow-y-auto no-scrollbar">
+            <div className="grid grid-cols-2 gap-2 flex-grow overflow-y-auto no-scrollbar">
               {/* Conditionally render first row */}
               {gameState.playerBoards[2] && (
                 <div className="row-start-1 col-start-1">

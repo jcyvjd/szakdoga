@@ -1,7 +1,6 @@
 import React from 'react';
 import { useGameContext } from '../../context/GameContext';
-import { useAuthContext} from '../../context/AuthContext';
-
+import { useAuthContext } from '../../context/AuthContext';
 import tile_red from '../../assets/tiles/tile_red.png';
 import tile_blue from '../../assets/tiles/tile_blue.png';
 import tile_azure from '../../assets/tiles/tile_azure.png';
@@ -19,7 +18,7 @@ const tileImages = {
 };
 
 const PlayerBoardCard = ({ playerBoard, onCollectedTilesClick }) => {
-  const { playerId, points, collectedTiles, wallTiles, floorTiles } = playerBoard;
+  const { playerId, points, collectedTiles, wallTiles, floorTiles, _id } = playerBoard;
   const name = playerId.username;
   const { gameState } = useGameContext();
   const { authUser } = useAuthContext();
@@ -61,7 +60,7 @@ const PlayerBoardCard = ({ playerBoard, onCollectedTilesClick }) => {
   }
 
   return (
-    <div className={`bg-white rounded-lg shadow-md p-4 w-80 flex flex-col ${borderColor} border-2`}>
+    <div id={_id} className={`bg-white rounded-lg shadow-md p-4 w-80 flex flex-col ${borderColor} border-2`}>
       {/* Top section: Points and Player ID */}
       <div className="flex justify-between mb-2">
         <div>
@@ -82,6 +81,7 @@ const PlayerBoardCard = ({ playerBoard, onCollectedTilesClick }) => {
               <div key={rowIndex} className="flex space-x-1 justify-end">
                 {row.map((tile, colIndex) => (
                   <div 
+                    id={`playerBoard-${_id}-col-${rowIndex}-tile-${colIndex}`} // Unique ID for each tile
                     key={colIndex} 
                     className={`w-6 h-6 rounded-md cursor-pointer`} 
                     style={{
@@ -107,6 +107,7 @@ const PlayerBoardCard = ({ playerBoard, onCollectedTilesClick }) => {
               <div key={rowIndex} className="flex space-x-1">
                 {row.map((tile, colIndex) => (
                   <div 
+                    id={`playerBoard-${_id}-wall-${rowIndex}-tile-${colIndex}`} // Unique ID for each tile
                     key={colIndex} 
                     className={`w-6 h-6 rounded-md`} 
                     style={{
@@ -125,28 +126,23 @@ const PlayerBoardCard = ({ playerBoard, onCollectedTilesClick }) => {
       </div>
 
       {/* Bottom section: Floor Tiles */}
-      <div className="flex flex-row items-center justify-center space-x-1">
+      <div className="flex flex-col items-center">
         <span className="font-semibold">Floor Tiles</span>
-        {floorTiles.map((tile, index) => (
-          <div 
-            key={index} 
-            className={`w-6 h-6 rounded-md relative`} 
-            style={{
-              border: '1px solid #ddd',
-              backgroundImage: tile === 'empty' ? 'none' : `url(${tileImages[tile]})`,
-              backgroundSize: 'cover',
-              backgroundColor: tileColors[tile] || '#ccc',
-              cursor: 'pointer',
-            }}  
-            onClick={() => onCollectedTilesClick(-1)}
-          >
-            {tile === 'empty' && (
-              <div className="absolute inset-0 flex items-center justify-center text-xs text-white z-10">
-                {index < 2 ? "-1" : index < 5 ? "-2" : "-3"}
-              </div>
-            )}
-          </div>
-        ))}
+        <div className="flex space-x-1">
+          {floorTiles.map((tile, index) => (
+            <div
+              id={`playerBoard-${_id}-floor-tile-${index}`} // Unique ID for each tile
+              key={index}
+              className="w-6 h-6 rounded-md"
+              style={{
+                border: '1px solid #ddd',
+                backgroundImage: tile === 'empty' ? 'none' : `url(${tileImages[tile]})`,
+                backgroundSize: 'cover',
+                backgroundColor: tileColors[tile] || '#ccc',
+              }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
