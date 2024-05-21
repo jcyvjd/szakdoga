@@ -17,3 +17,10 @@
 .grid-rows-layout {
     grid-template-rows: 1fr auto;
   }
+
+.blur {
+  backdrop-filter: blur(5px);
+}
+
+
+  
