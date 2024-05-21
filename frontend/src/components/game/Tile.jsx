@@ -15,8 +15,9 @@ const tileImages = {
   white: tile_white,
 };
 
-const Tile = ({ tile, onClick, isSelected }) => (
+const Tile = ({ tile, onClick, isSelected, id }) => (
   <div 
+    id={id}
     style={{
       border: isSelected ? '3px solid #000' : '1px solid #ddd',
       backgroundImage: tile ? `url(${tileImages[tile]})` : 'none',

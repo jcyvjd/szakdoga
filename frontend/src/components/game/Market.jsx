@@ -4,7 +4,10 @@ import Tile from './Tile';
 import factory_img from '../../assets/factory1.jpg';
 
 const Market = ({ tiles, onTileClick, marketId, selectedTile, selectedMarket }) => (
-  <div className="flex flex-col items-center p-4 rounded-md border-2 border-gray-300 relative" style={{
+  <div 
+  id={`market-${marketId}`}
+    className="flex flex-col items-center p-4 rounded-md border-2 border-gray-300 relative" 
+    style={{
     borderRadius: '15px',
     border: '2px solid black',
     overflow: 'hidden',
@@ -24,6 +27,7 @@ const Market = ({ tiles, onTileClick, marketId, selectedTile, selectedMarket }) 
           tile={tile}
           onClick={() => onTileClick(tile, marketId)}
           isSelected = {selectedTile === tile && selectedMarket === marketId}
+          id={`market-${marketId}-tile-${index}`}
         />
       ))}
     </div>

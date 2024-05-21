@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useSpring, animated } from "react-spring";
 import { useSocketContext } from "../context/SocketContext";
 import { useGameContext } from "../context/GameContext";
 import { useAuthContext } from "../context/AuthContext";
@@ -32,31 +31,43 @@ const useListenGame = () => {
         });
 
         const handleTileMove = (data) => {
+            console.log("MoveTile", data);
             const { from, to } = data;
             const { marketId, index: fromIndex } = from;
             const { playerBoardId, type: toType, index: toIndex } = to;
 
             // Get the fromElement based on the marketId and fromIndex
             const fromElement = document.getElementById(`market-${marketId}-tile-${fromIndex}`);
+            console.log("fromIndex", fromIndex)
+            console.log("fromElementId", `market-${marketId}-tile-${fromIndex}`);
 
             let toElementId;
             if (toType === 'collected') {
                 const rowIndex = Math.floor(toIndex / 10);
                 const colIndex = toIndex % 10;
                 toElementId = `playerBoard-${playerBoardId}-col-${rowIndex}-tile-${colIndex}`;
+                console.log("toElementId", toElementId);
             } else if (toType === 'wall') {
                 const rowIndex = Math.floor(toIndex / 10);
                 const colIndex = toIndex % 10;
                 toElementId = `playerBoard-${playerBoardId}-wall-${rowIndex}-tile-${colIndex}`;
+                console.log("toElementId", toElementId);
+
             } else if (toType === 'floor') {
                 toElementId = `playerBoard-${playerBoardId}-floor-tile-${toIndex}`;
+                console.log("toElementId", toElementId);
+
             }
 
             const toElement = document.getElementById(toElementId);
+            console.log("fromElement", fromElement);
+            console.log("toElement", toElement);
 
             if (fromElement && toElement) {
                 const fromRect = fromElement.getBoundingClientRect();
                 const toRect = toElement.getBoundingClientRect();
+                console.log("fromRect", fromRect);
+                console.log("toRect", toRect);
 
                 // Create a temporary element for the animation
                 const tempTile = fromElement.cloneNode(true);

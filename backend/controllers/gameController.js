@@ -462,7 +462,19 @@ export const takeTiles = async (req, res) => {
             return res.status(400).json({ error: "Invalid move" });
         }
 
-        let tilesToTake = [];
+        let marketCopy = [];
+        if(source >= 0)
+        {
+            game.markets[source].forEach(tile => {
+                marketCopy.push(tile);
+            });
+        }else if(source === -1){
+            game.sharedMarket.forEach(tile => {
+                marketCopy.push(tile);
+            });
+        }
+
+         let tilesToTake = [];
         if (source >= 0) {
             game.markets[source].forEach((tile, tileIndex) => {
                 if (tile === color) {
@@ -495,10 +507,12 @@ export const takeTiles = async (req, res) => {
                 const emptyIndex = playerBoard.floorTiles.findIndex(tile => tile === 'empty');
                 if (emptyIndex !== -1) {
                     playerBoard.floorTiles[emptyIndex] = tile;
+                    const tileIndex = marketCopy.indexOf(tile);
                     io.emit("MoveTile", {
-                        from: { marketId: source, tile },
+                        from: { marketId: source, index: tileIndex },
                         to: { playerBoardId: playerBoard._id, type: "floor", index: emptyIndex }
                     });
+                    marketCopy[tileIndex] = "empty";
                 }
             }
         } else {
@@ -507,18 +521,22 @@ export const takeTiles = async (req, res) => {
                 if (playerBoard.collectedTiles[row].includes('empty')) {
                     const emptyIndex = playerBoard.collectedTiles[row].indexOf('empty');
                     playerBoard.collectedTiles[row][emptyIndex] = tile;
+                    const tileIndex = marketCopy.indexOf(tile);
                     io.emit("MoveTile", {
-                        from: { marketId: source, tile },
-                        to: { playerBoardId: playerBoard._id, type: "collected", index: `${row}-${emptyIndex}` }
+                        from: { marketId: source, index: tileIndex },
+                        to: { playerBoardId: playerBoard._id, type: "collected", index: `${row}${emptyIndex}` }
                     });
+                    marketCopy[tileIndex] = "empty";
                 } else {
                     const emptyIndex = playerBoard.floorTiles.findIndex(tile => tile === 'empty');
                     if (emptyIndex !== -1) {
                         playerBoard.floorTiles[emptyIndex] = tile;
+                        const tileIndex = marketCopy.indexOf(tile);
                         io.emit("MoveTile", {
-                            from: { marketId: source, tile },
+                            from: { marketId: source, index: tileIndex },
                             to: { playerBoardId: playerBoard._id, type: "floor", index: emptyIndex }
                         });
+                        marketCopy[tileIndex] = "empty";
                     }
                 }
             }

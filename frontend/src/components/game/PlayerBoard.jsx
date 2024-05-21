@@ -133,14 +133,22 @@ const PlayerBoardCard = ({ playerBoard, onCollectedTilesClick }) => {
             <div
               id={`playerBoard-${_id}-floor-tile-${index}`} // Unique ID for each tile
               key={index}
-              className="w-6 h-6 rounded-md"
+              className="w-6 h-6 rounded-md relative"
               style={{
                 border: '1px solid #ddd',
                 backgroundImage: tile === 'empty' ? 'none' : `url(${tileImages[tile]})`,
                 backgroundSize: 'cover',
                 backgroundColor: tileColors[tile] || '#ccc',
+                cursor: 'pointer',
               }}
-            />
+              onClick={() => onCollectedTilesClick(-1)}
+            >
+            {tile === 'empty' && (
+              <div className="absolute inset-0 flex items-center justify-center text-xs text-white z-10">
+                {index < 2 ? "-1" : index < 5 ? "-2" : "-3"}
+              </div>
+            )}
+            </div>
           ))}
         </div>
       </div>
