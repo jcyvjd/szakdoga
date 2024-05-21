@@ -564,7 +564,7 @@ export const takeTiles = async (req, res) => {
         // Emit UpdateGame event to all players involved in the game
         for (const userId of game.players) {
             const receiverSocketId = getReceiverSocketId(userId);
-            io.to(receiverSocketId).emit("UpdateGame", populatedGame);
+            io.to(receiverSocketId).emit("TakeTiles", populatedGame);
         }
 
         res.status(200).json({ message: "Tiles taken successfully" });
