@@ -1,0 +1,130 @@
+// Emit MoveTile event for each tile moved to the frontend
+for (const tile of tilesToTake) {
+    let toIndex;
+    if (row === -1) {
+        // For floorTiles, use the empty index directly
+        toIndex = playerBoard.floorTiles.findIndex(tile => tile === 'empty');
+    } else {
+        // For collectedTiles, use a combined index of row and colIndex
+        toIndex = `${row}-${playerBoard.collectedTiles[row].findIndex(tile => tile === 'empty')}`;
+    }
+
+    io.emit("MoveTile", {
+        from: { marketId: source, tile },
+        to: { playerBoardId: playerBoard._id, type: row === -1 ? "floor" : "collected", index: toIndex }
+    });
+}
+
+
+export const takeTiles = async (req, res) => {
+    try {
+        const game = await Game.findOne({ roomId: req.user.roomId }).populate('playerBoards');
+        if(!game){
+            return res.status(404).json({error: "No such game"});
+        }
+
+        const playerBoard = game.playerBoards.find(board => board.playerId.toString() === req.user._id.toString());
+        if (!playerBoard) {
+            return res.status(404).json({ error: "PlayerBoard not found" });
+        }
+
+        const { tile: color, marketId: source, row } = req.body;
+        console.log("color: ", color, "source: ", source, "row: ", row);
+
+        //a jatekos kovetkeyik
+        if(!game.playerToMove.equals(req.user._id)){
+            return res.status(400).json({error: "Not your turn"});
+        }
+
+        //Van tabla szin sor, ellenorzunk
+        if(!isValideMove(playerBoard, color, row)){
+            return res.status(400).json({error: "Invalid move"});
+            //socket Error kell vagz invalid move
+
+        }//ha nem valid a lepes nem csinalunk semmit
+
+        let tilesToTake = [];
+        if(source >= 0){
+            game.markets[source].forEach((tile, tileIndex) => {
+                if(tile === color){
+                    tilesToTake.push(tile);
+                    game.markets[source][tileIndex] = "empty";
+                }
+            });
+            game.sharedMarket = [...game.sharedMarket, ...game.markets[source].filter(tile => tile !== "empty")];
+            game.markets[source] = ["empty", "empty", "empty", "empty"];
+        }else if(source === -1){
+            game.sharedMarket = game.sharedMarket.filter((tile, index) => {
+                if (tile === color) {
+                    tilesToTake.push(tile);
+                    return false;
+                }
+                return true;
+            });
+            if (game.sharedMarket.includes('white')) {
+                game.sharedMarket = game.sharedMarket.filter(tile => tile !== 'white');
+                
+                const emptyIndex = playerBoard.floorTiles.findIndex(tile => tile === 'empty');
+                if (emptyIndex !== -1) {
+                    playerBoard.floorTiles[emptyIndex] = 'white';
+                }
+            }
+        }
+
+        if(row === -1){
+            for (let i = 0; i < tilesToTake.length; i++) {
+                const emptyIndex = playerBoard.floorTiles.findIndex(tile => tile === 'empty');
+                if (emptyIndex !== -1) {
+                    playerBoard.floorTiles[emptyIndex] = tilesToTake[i];
+                }
+            }
+        }else{
+            // Fill collectedTiles[row] with tilesToTake
+            for (let i = 0; i < tilesToTake.length; i++) {
+                if (playerBoard.collectedTiles[row].includes('empty')) {
+                    const emptyIndex = playerBoard.collectedTiles[row].indexOf('empty');
+                    playerBoard.collectedTiles[row][emptyIndex] = tilesToTake[i];
+                } else {
+                    const emptyIndex = playerBoard.floorTiles.findIndex(tile => tile === 'empty');
+                    if (emptyIndex !== -1) {
+                        playerBoard.floorTiles[emptyIndex] = tilesToTake[i];
+                    }
+                }
+            }
+        }
+
+        //check if round is over
+        if (isRoundOver(game)) {
+            console.log("Round is over");
+            await onRoundOver(game);
+        } else {
+            game.playerToMove = game.players[(game.players.indexOf(req.user.id) + 1) % game.players.length];
+        }
+        
+        await game.save();
+        await playerBoard.save();
+
+        const populatedGame = await Game.findById(game._id).populate({
+            path: 'playerBoards',
+            populate: {
+              path: 'playerId',
+              model: 'User' 
+            }
+          });
+
+        //socket
+
+
+        for (const userId of game.players) {
+            const receiverSocketId = getReceiverSocketId(userId);
+            io.to(receiverSocketId).emit("UpdateGame",  populatedGame );
+        }
+        res.status(200).json({ message: "Tiles taken successfully" });
+        
+        
+        
+    } catch (error) {
+        console.log("Error in takeTiles: ", error.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}

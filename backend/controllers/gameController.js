@@ -441,8 +441,8 @@ const isValideMove = (playerBoard, color, rowInd) => {
 export const takeTiles = async (req, res) => {
     try {
         const game = await Game.findOne({ roomId: req.user.roomId }).populate('playerBoards');
-        if(!game){
-            return res.status(404).json({error: "No such game"});
+        if (!game) {
+            return res.status(404).json({ error: "No such game" });
         }
 
         const playerBoard = game.playerBoards.find(board => board.playerId.toString() === req.user._id.toString());
@@ -451,31 +451,28 @@ export const takeTiles = async (req, res) => {
         }
 
         const { tile: color, marketId: source, row } = req.body;
-        console.log("color: ", color, "source: ", source, "row: ", row);
 
-        //a jatekos kovetkeyik
-        if(!game.playerToMove.equals(req.user._id)){
-            return res.status(400).json({error: "Not your turn"});
+        // Check if it's the player's turn
+        if (!game.playerToMove.equals(req.user._id)) {
+            return res.status(400).json({ error: "Not your turn" });
         }
 
-        //Van tabla szin sor, ellenorzunk
-        if(!isValideMove(playerBoard, color, row)){
-            return res.status(400).json({error: "Invalid move"});
-            //socket Error kell vagz invalid move
-
-        }//ha nem valid a lepes nem csinalunk semmit
+        // Check if the move is valid
+        if (!isValideMove(playerBoard, color, row)) {
+            return res.status(400).json({ error: "Invalid move" });
+        }
 
         let tilesToTake = [];
-        if(source >= 0){
+        if (source >= 0) {
             game.markets[source].forEach((tile, tileIndex) => {
-                if(tile === color){
+                if (tile === color) {
                     tilesToTake.push(tile);
                     game.markets[source][tileIndex] = "empty";
                 }
             });
             game.sharedMarket = [...game.sharedMarket, ...game.markets[source].filter(tile => tile !== "empty")];
             game.markets[source] = ["empty", "empty", "empty", "empty"];
-        }else if(source === -1){
+        } else if (source === -1) {
             game.sharedMarket = game.sharedMarket.filter((tile, index) => {
                 if (tile === color) {
                     tilesToTake.push(tile);
@@ -485,7 +482,7 @@ export const takeTiles = async (req, res) => {
             });
             if (game.sharedMarket.includes('white')) {
                 game.sharedMarket = game.sharedMarket.filter(tile => tile !== 'white');
-                
+
                 const emptyIndex = playerBoard.floorTiles.findIndex(tile => tile === 'empty');
                 if (emptyIndex !== -1) {
                     playerBoard.floorTiles[emptyIndex] = 'white';
@@ -493,61 +490,73 @@ export const takeTiles = async (req, res) => {
             }
         }
 
-        if(row === -1){
-            for (let i = 0; i < tilesToTake.length; i++) {
+        if (row === -1) {
+            for (const tile of tilesToTake) {
                 const emptyIndex = playerBoard.floorTiles.findIndex(tile => tile === 'empty');
                 if (emptyIndex !== -1) {
-                    playerBoard.floorTiles[emptyIndex] = tilesToTake[i];
+                    playerBoard.floorTiles[emptyIndex] = tile;
+                    io.emit("MoveTile", {
+                        from: { marketId: source, tile },
+                        to: { playerBoardId: playerBoard._id, type: "floor", index: emptyIndex }
+                    });
                 }
             }
-        }else{
+        } else {
             // Fill collectedTiles[row] with tilesToTake
-            for (let i = 0; i < tilesToTake.length; i++) {
+            for (const tile of tilesToTake) {
                 if (playerBoard.collectedTiles[row].includes('empty')) {
                     const emptyIndex = playerBoard.collectedTiles[row].indexOf('empty');
-                    playerBoard.collectedTiles[row][emptyIndex] = tilesToTake[i];
+                    playerBoard.collectedTiles[row][emptyIndex] = tile;
+                    io.emit("MoveTile", {
+                        from: { marketId: source, tile },
+                        to: { playerBoardId: playerBoard._id, type: "collected", index: `${row}-${emptyIndex}` }
+                    });
                 } else {
                     const emptyIndex = playerBoard.floorTiles.findIndex(tile => tile === 'empty');
                     if (emptyIndex !== -1) {
-                        playerBoard.floorTiles[emptyIndex] = tilesToTake[i];
+                        playerBoard.floorTiles[emptyIndex] = tile;
+                        io.emit("MoveTile", {
+                            from: { marketId: source, tile },
+                            to: { playerBoardId: playerBoard._id, type: "floor", index: emptyIndex }
+                        });
                     }
                 }
             }
         }
 
-        //check if round is over
+        // Check if round is over
         if (isRoundOver(game)) {
             console.log("Round is over");
             await onRoundOver(game);
         } else {
             game.playerToMove = game.players[(game.players.indexOf(req.user.id) + 1) % game.players.length];
         }
-        
+
         await game.save();
         await playerBoard.save();
 
         const populatedGame = await Game.findById(game._id).populate({
             path: 'playerBoards',
             populate: {
-              path: 'playerId',
-              model: 'User' 
+                path: 'playerId',
+                model: 'User'
             }
-          });
+        });
 
-        //socket
+        // Emit UpdateGame event to all players involved in the game
         for (const userId of game.players) {
             const receiverSocketId = getReceiverSocketId(userId);
-            io.to(receiverSocketId).emit("UpdateGame",  populatedGame );
+            io.to(receiverSocketId).emit("UpdateGame", populatedGame);
         }
+
         res.status(200).json({ message: "Tiles taken successfully" });
-        
-        
-        
+
     } catch (error) {
         console.log("Error in takeTiles: ", error.message);
         res.status(500).json({ error: "Internal server error" });
     }
 }
+
 
 //Send back the game
 export const getGame = async (req, res) => {
