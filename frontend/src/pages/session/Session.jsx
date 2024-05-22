@@ -174,21 +174,22 @@ const Session = () => {
       <div className="lg:flex h-full overflow-auto no-scrollbar">
         {/* Left side panel */}
         <div
-        className={`collapse w-full lg:flex lg:w-1/3 ${isPanelOpen ? 'flex' : 'hidden'} flex-grow flex-col p-4 space-y-2 `}
-        id="collapseExample"
-        data-twe-collapse-item
-      >
-          <div className="flex flex-grow">
+          className={`collapse w-full lg:flex lg:w-1/3 ${isPanelOpen ? 'flex' : 'hidden'} flex-grow flex-col p-4 space-y-2 `}
+          id="collapseExample"
+          data-twe-collapse-item
+        >
+          {/* Buttons Div */}
+          <div className="flex flex-grow justify-between">
             <button
               onClick={handleLeaveRoom}
-              className="inline-flex w-1/2 mr-1 justify-center items-center bg-base-300 text-base-content py-2 px-4 rounded-md"
+              className="inline-flex flex-1 mr-0.5 justify-center items-center bg-base-300 text-base-content py-2 px-4 rounded-md"
             >
               <FiLogOut className="mr-1" /> Leave Room
             </button>
             {!gameState && !gameOver && (
               <button
                 onClick={handleToggleReady}
-                className={`inline-flex w-1/2 items-center justify-center py-2 px-4 rounded-md ${
+                className={`inline-flex flex-1 items-center justify-center py-2 px-4 rounded-md ${
                   playerReady
                     ? "bg-success text-success-content"
                     : "bg-base-200 text-base-content"
@@ -222,7 +223,7 @@ const Session = () => {
           )}
           {/* Game Board */}
           {gameState && !gameOver && (
-            <div className="grid grid-cols-2 gap-2 flex-grow overflow-y-auto no-scrollbar">
+            <div className="grid grid-cols-2 gap-2 flex-grow overflow-y-auto no-scrollbar items-center">
               {/* Conditionally render first row */}
               {gameState.playerBoards[2] && (
                 <div className="row-start-1 col-start-1">

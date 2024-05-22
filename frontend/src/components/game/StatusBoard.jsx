@@ -3,7 +3,7 @@ import React from 'react';
 const StatusBoard = ({ users, authUserId, onToggleReady }) => {
   console.log("statusboard users: ",users)
   if (!users || users.length === 0) {
-    //return null;
+    return null;
   }
 
   return (
@@ -18,7 +18,8 @@ const StatusBoard = ({ users, authUserId, onToggleReady }) => {
         </thead>
         <tbody>
           {users.map((user, index) => (
-            <tr key={user._id} className="hover">
+            <tr key={user._id.toString()} 
+            className="hover">
               <th>{index + 1}</th>
               <td>{user.username}</td>
               <td>

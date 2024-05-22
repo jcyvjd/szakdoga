@@ -27,23 +27,25 @@ const HelpPanel = ({ isOpen, setShowHelpPanel }) => {
             >
                 <div className="flex justify-between items-center">
                     {/* Tab buttons */}
-                    <div className="flex space-x-4 flex-grow">
+                    <div className="flex space-x-4 mr-2 flex-grow overflow-hidden">
                         <button 
-                            className={`btn flex-grow mx-2 ${selectedTab === 'rules' ? 'btn-primary text-lg px-6' : 'btn-secondary'}`}
+                            className={`btn flex-1 mx-2 ${selectedTab === 'rules' ? 'btn-primary text-lg px-6' : 'btn-secondary'}`}
                             onClick={() => setSelectedTab('rules')}
+                            style={{ whiteSpace: 'nowrap' }}
                         >
                             Game Rules
                         </button>
                         <button 
-                            className={`btn flex-grow mx-2 ${selectedTab === 'usage' ? 'btn-primary text-lg px-6' : 'btn-secondary'}`}
+                            className={`btn flex-1 mx-2 ${selectedTab === 'usage' ? 'btn-primary text-lg px-6' : 'btn-secondary'}`}
                             onClick={() => setSelectedTab('usage')}
+                            style={{ whiteSpace: 'nowrap' }}
                         >
                             How to Use
                         </button>
                     </div>
                     {/* Close button */}
                     <button
-                        className="btn btn-error text-xl cursor-pointer mx-2"
+                        className="btn btn-error text-xl cursor-pointer mr-2"
                         onClick={closeHelpPanel}
                     >
                         &times;

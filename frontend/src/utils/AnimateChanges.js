@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 
 
-const AnimateChanges = (previousState, currentState) => {
+export const animateTakeTiles = (previousState, currentState) => {
     if (!previousState || !currentState) return null;
-    console.log("AnimateChanges", previousState, currentState);
+    console.log("AnimateTakeTiles", previousState, currentState);
     try {
         const playerId = previousState.playerToMove;
 
@@ -17,11 +17,11 @@ const AnimateChanges = (previousState, currentState) => {
             }
         }
         if(prevMarket === null){
-            if(previousState.sharedMarket !== currentState.sharedMarket){
+            if(JSON.stringify(previousState.sharedMarket) !== JSON.stringify(currentState.sharedMarket)){
                 prevMarket = previousState.sharedMarket;
                 marketId = -1;
             }else{
-                //return null;
+                return null;
             }
         }
         //ha prevMarket null, akkor nem takeTile tortent (talan korVege)
@@ -37,20 +37,24 @@ const AnimateChanges = (previousState, currentState) => {
                 for(let tileInd = 0; tileInd < prevPlayerBoard.collectedTiles[row].length; ++tileInd)
                 {
                     if (prevPlayerBoard.collectedTiles[row][tileInd] !== currentPlayerBoard.collectedTiles[row][tileInd]) {
+                        const fromElementId = `market-${marketId}-tile-${prevMarket.indexOf(currentPlayerBoard.collectedTiles[row][tileInd])}`;
+                        const toElementId = `playerBoard-${prevPlayerBoard._id}-col-${row}-tile-${tileInd}`;
                         handleTileMove({
-                            from: { marketId, index : prevMarket.indexOf(currentPlayerBoard.collectedTiles[row][tileInd])},
-                            to: { playerBoardId: prevPlayerBoard._id, type: 'collected', index: `${row}${tileInd}`}
+                            fromElementId,
+                            toElementId,
                         })
                         prevMarket[prevMarket.indexOf(currentPlayerBoard.collectedTiles[row][tileInd])] = 'empty';
                     }
                 }
             }
-            //to floor tiles
+            //market to floor tiles
             for(let tileInd = 0; tileInd < prevPlayerBoard.floorTiles.length; ++tileInd){
                 if(prevPlayerBoard.floorTiles[tileInd] !== currentPlayerBoard.floorTiles[tileInd]){
+                    const fromElementId = `market-${marketId}-tile-${prevMarket.indexOf(currentPlayerBoard.floorTiles[tileInd])}`;
+                    const toElementId = `playerBoard-${prevPlayerBoard._id}-floor-tile-${tileInd}`;
                     handleTileMove({
-                        from: { marketId, index : prevMarket.indexOf(currentPlayerBoard.floorTiles[tileInd])},
-                        to: { playerBoardId: prevPlayerBoard._id, type: 'floor', index: tileInd}
+                        fromElementId,
+                        toElementId,
                     })
                     prevMarket[prevMarket.indexOf(currentPlayerBoard.floorTiles[tileInd])] = 'empty';
                 }
@@ -64,129 +68,47 @@ const AnimateChanges = (previousState, currentState) => {
   return null; // You can return any necessary cleanup function or value
 };
 
+
+//kap egy toElementId-t, es egy fromElementId-t, es animacioval mozgatja a fromElementId-t a toElementId-re
 const handleTileMove = (data) => {
-    console.log("MoveTile", data);
-    const { from, to } = data;
-    const { marketId, index: fromIndex } = from;
-    const { playerBoardId, type: toType, index: toIndex } = to;
-console.log("Still MOVING")
-    // Get the fromElement based on the marketId and fromIndex
-    const fromElement = document.getElementById(`market-${marketId}-tile-${fromIndex}`);
-    console.log("fromIndex", fromIndex)
-    console.log("fromElementId", `market-${marketId}-tile-${fromIndex}`);
+    try {
+        console.log("MoveTile", data);
+        const { fromElementId, toElementId } = data;
 
-    let toElementId;
-    if (toType === 'collected') {
-        const rowIndex = Math.floor(toIndex / 10);
-        const colIndex = toIndex % 10;
-        toElementId = `playerBoard-${playerBoardId}-col-${rowIndex}-tile-${colIndex}`;
-        console.log("toElementId", toElementId);
-    } else if (toType === 'wall') {
-        const rowIndex = Math.floor(toIndex / 10);
-        const colIndex = toIndex % 10;
-        toElementId = `playerBoard-${playerBoardId}-wall-${rowIndex}-tile-${colIndex}`;
-        console.log("toElementId", toElementId);
+        console.log("Still MOVING")
 
-    } else if (toType === 'floor') {
-        toElementId = `playerBoard-${playerBoardId}-floor-tile-${toIndex}`;
-        console.log("toElementId", toElementId);
+        const fromElement = document.getElementById(fromElementId);
+        const toElement = document.getElementById(toElementId);
+        console.log("fromElement", fromElement);
+        console.log("toElement", toElement);
 
-    }
+        if (fromElement && toElement) {
+            const fromRect = fromElement.getBoundingClientRect();
+            const toRect = toElement.getBoundingClientRect();
+            console.log("fromRect", fromRect);
+            console.log("toRect", toRect);
 
-    const toElement = document.getElementById(toElementId);
-    console.log("fromElement", fromElement);
-    console.log("toElement", toElement);
+            // Create a temporary element for the animation
+            const tempTile = fromElement.cloneNode(true);
+            tempTile.style.position = 'absolute';
+            tempTile.style.top = `${fromRect.top}px`;
+            tempTile.style.left = `${fromRect.left}px`;
+            tempTile.style.width = `${fromRect.width}px`;
+            tempTile.style.height = `${fromRect.height}px`;
+            document.body.appendChild(tempTile);
 
-    if (fromElement && toElement) {
-        const fromRect = fromElement.getBoundingClientRect();
-        const toRect = toElement.getBoundingClientRect();
-        console.log("fromRect", fromRect);
-        console.log("toRect", toRect);
-
-        // Create a temporary element for the animation
-        const tempTile = fromElement.cloneNode(true);
-        tempTile.style.position = 'absolute';
-        tempTile.style.top = `${fromRect.top}px`;
-        tempTile.style.left = `${fromRect.left}px`;
-        tempTile.style.width = `${fromRect.width}px`;
-        tempTile.style.height = `${fromRect.height}px`;
-        document.body.appendChild(tempTile);
-
-        // Animate the tile movement
-        tempTile.animate([
-            { transform: `translate(${toRect.left - fromRect.left}px, ${toRect.top - fromRect.top}px)` }
-        ], {
-            duration: 500,
-            easing: 'ease-in-out'
-        }).onfinish = () => {
-            document.body.removeChild(tempTile);
-            // You might want to update the game state here to reflect the new tile position
-        };
+            // Animate the tile movement
+            tempTile.animate([
+                { transform: `translate(${toRect.left - fromRect.left}px, ${toRect.top - fromRect.top}px)` }
+            ], {
+                duration: 500,
+                easing: 'ease-in-out'
+            }).onfinish = () => {
+                document.body.removeChild(tempTile);
+            };
+        }
+    } catch (error) {
+        console.error(error);
     }
 };
 
-export default AnimateChanges;
-
-
-
-/*
-const handleTileMove = (data) => {
-            console.log("MoveTile", data);
-            const { from, to } = data;
-            const { marketId, index: fromIndex } = from;
-            const { playerBoardId, type: toType, index: toIndex } = to;
-
-            // Get the fromElement based on the marketId and fromIndex
-            const fromElement = document.getElementById(`market-${marketId}-tile-${fromIndex}`);
-            console.log("fromIndex", fromIndex)
-            console.log("fromElementId", `market-${marketId}-tile-${fromIndex}`);
-
-            let toElementId;
-            if (toType === 'collected') {
-                const rowIndex = Math.floor(toIndex / 10);
-                const colIndex = toIndex % 10;
-                toElementId = `playerBoard-${playerBoardId}-col-${rowIndex}-tile-${colIndex}`;
-                console.log("toElementId", toElementId);
-            } else if (toType === 'wall') {
-                const rowIndex = Math.floor(toIndex / 10);
-                const colIndex = toIndex % 10;
-                toElementId = `playerBoard-${playerBoardId}-wall-${rowIndex}-tile-${colIndex}`;
-                console.log("toElementId", toElementId);
-
-            } else if (toType === 'floor') {
-                toElementId = `playerBoard-${playerBoardId}-floor-tile-${toIndex}`;
-                console.log("toElementId", toElementId);
-
-            }
-
-            const toElement = document.getElementById(toElementId);
-            console.log("fromElement", fromElement);
-            console.log("toElement", toElement);
-
-            if (fromElement && toElement) {
-                const fromRect = fromElement.getBoundingClientRect();
-                const toRect = toElement.getBoundingClientRect();
-                console.log("fromRect", fromRect);
-                console.log("toRect", toRect);
-
-                // Create a temporary element for the animation
-                const tempTile = fromElement.cloneNode(true);
-                tempTile.style.position = 'absolute';
-                tempTile.style.top = `${fromRect.top}px`;
-                tempTile.style.left = `${fromRect.left}px`;
-                tempTile.style.width = `${fromRect.width}px`;
-                tempTile.style.height = `${fromRect.height}px`;
-                document.body.appendChild(tempTile);
-
-                // Animate the tile movement
-                tempTile.animate([
-                    { transform: `translate(${toRect.left - fromRect.left}px, ${toRect.top - fromRect.top}px)` }
-                ], {
-                    duration: 500,
-                    easing: 'ease-in-out'
-                }).onfinish = () => {
-                    document.body.removeChild(tempTile);
-                    // You might want to update the game state here to reflect the new tile position
-                };
-            }
-*/
