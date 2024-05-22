@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "react";
 
 
 export const animateTakeTiles = (previousState, currentState) => {
     if (!previousState || !currentState) return null;
+    //if (!validateGameState(previousState) || !validateGameState(currentState)) return null;
     console.log("AnimateTakeTiles", previousState, currentState);
     try {
         const playerId = previousState.playerToMove;
@@ -68,6 +68,58 @@ export const animateTakeTiles = (previousState, currentState) => {
   return null; // You can return any necessary cleanup function or value
 };
 
+export const animateRoundOver = (previousState, currentState) => {
+    if (!previousState || !currentState) return null;
+    console.log("AnimateRoundOver", previousState, currentState);
+    try {
+        // Iterate through player boards to find differences
+        for (let playerBoardIndex = 0; playerBoardIndex < currentStateState.playerBoards.length; playerBoardIndex++) {
+            const prevPlayerBoard = previousState.playerBoards[playerBoardIndex];
+            const currentPlayerBoard = currentState.playerBoards[playerBoardIndex];
+
+            // Iterate through collected tiles rows
+            for (let row = 0; row < prevPlayerBoard.collectedTiles.length; ++row) {
+                const prevCollectedTilesRow = prevPlayerBoard.collectedTiles[row];
+                const currentCollectedTilesRow = currentPlayerBoard.collectedTiles[row];
+
+                // Check if the collected tiles row has changed
+                if (JSON.stringify(prevCollectedTilesRow) !== JSON.stringify(currentCollectedTilesRow)) {
+                    // Find the last element to move to the wall position
+                    const lastElement = currentCollectedTilesRow[currentCollectedTilesRow.length - 1];
+                    const lastElementIndex = prevCollectedTilesRow.indexOf(lastElement);
+
+                    if (lastElement !== undefined && lastElementIndex !== -1) {
+                        const fromElementId = `playerBoard-${prevPlayerBoard._id}-col-${row}-tile-${lastElementIndex}`;
+                        const toElementId = `playerBoard-${prevPlayerBoard._id}-wall-${row}-${lastElement}`;
+
+                        handleTileMove({
+                            fromElementId,
+                            toElementId,
+                        });
+
+                        // Animate the rest of the collected tiles to the shared market center
+                        for (let tileInd = 0; tileInd < prevCollectedTilesRow.length; ++tileInd) {
+                            if (tileInd !== lastElementIndex && prevCollectedTilesRow[tileInd] !== 'empty') {
+                                const fromElementId = `playerBoard-${prevPlayerBoard._id}-col-${row}-tile-${tileInd}`;
+                                const toElementId = `sharedMarket-center`;
+
+                                handleTileMove({
+                                    fromElementId,
+                                    toElementId,
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } catch (error) {
+        console.error(error);
+    }
+
+    return null;
+};
+
 
 //kap egy toElementId-t, es egy fromElementId-t, es animacioval mozgatja a fromElementId-t a toElementId-re
 const handleTileMove = (data) => {
@@ -112,3 +164,42 @@ const handleTileMove = (data) => {
     }
 };
 
+
+// Define the expected structure of a game state (example using JavaScript objects)
+const expectedGameStateStructure = {
+    _id: 'string',
+    playerToMove: 'string',
+    markets: 'array',
+    sharedMarket: 'array',
+    playerBoards: 'array',
+    players: 'array',
+    gameStatus: 'string',
+    roomId: 'string',
+};
+
+// Function to validate the game state
+const validateGameState = (state) => {
+    if (typeof state !== 'object' || state === null) return false;
+
+    for (let key in expectedGameStateStructure) {
+        if (!(key in state)) return false;
+        if (typeof state[key] !== expectedGameStateStructure[key]) return false;
+    }
+
+    // Further validate nested structures
+    if (!Array.isArray(state.markets) || !Array.isArray(state.sharedMarket) || !Array.isArray(state.playerBoards)) return false;
+
+    if(state.playerToMove === null) return false;
+    if(state.players.length < 2) return false;
+    if(state.players.length > 4) return false;
+    if(state.markets.length !== state.playerBoards.length) return false;
+
+    //checks for playerBoards
+    for (let board of state.playerBoards) {
+        if (typeof board !== 'object' || !('_id' in board) || !('collectedTiles' in board) || !('floorTiles' in board) || !('wallTiles' in board)) {
+            return false;
+        }
+    }
+
+    return true;
+};

@@ -78,9 +78,20 @@ export const setupGame = async (req, res) => {
                   model: 'User' 
                 }
               });
+              const payload = {
+                _id: populatedGame._id,
+                gameStatus: populatedGame.gameStatus,
+                markets: populatedGame.markets,
+                sharedMarket: populatedGame.sharedMarket,
+                playerBoards: populatedGame.playerBoards,
+                playerToMove: populatedGame.playerToMove,
+                players: populatedGame.players,
+                roomId: populatedGame.roomId
+            };
+
             for (const userId of room.users) {
                 const receiverSocketId = getReceiverSocketId(userId);
-                io.to(receiverSocketId).emit("NewGame",  populatedGame );
+                io.to(receiverSocketId).emit("NewGame",  payload );
             }
             return console.log("Game already exists");
         }
@@ -111,9 +122,21 @@ export const setupGame = async (req, res) => {
               model: 'User' 
             }
           });
+
+          const payload = {
+            _id: populatedGame._id,
+            gameStatus: populatedGame.gameStatus,
+            markets: populatedGame.markets,
+            sharedMarket: populatedGame.sharedMarket,
+            playerBoards: populatedGame.playerBoards,
+            playerToMove: populatedGame.playerToMove,
+            players: populatedGame.players,
+            roomId: populatedGame.roomId
+        };
+
         for (const userId of room.users) {
             const receiverSocketId = getReceiverSocketId(userId);
-            io.to(receiverSocketId).emit("NewGame",  populatedGame );
+            io.to(receiverSocketId).emit("NewGame",  payload );
         }
 
         res.status(200).json(newGame);
@@ -166,11 +189,22 @@ const startNewRound = async (game) => {
               model: 'User' 
             }
           });
+
+        const payload = {
+            _id: populatedGame._id,
+            gameStatus: populatedGame.gameStatus,
+            markets: populatedGame.markets,
+            sharedMarket: populatedGame.sharedMarket,
+            playerBoards: populatedGame.playerBoards,
+            playerToMove: populatedGame.playerToMove,
+            players: populatedGame.players,
+            roomId: populatedGame.roomId
+        };
         
         for (const userId of game.players) {
             console.log("StartNewRound userId: ", userId)
             const receiverSocketId = getReceiverSocketId(userId);
-            io.to(receiverSocketId).emit("UpdateGame", populatedGame );
+            io.to(receiverSocketId).emit("UpdateGame", payload );
         }
 
     } catch (error) {
@@ -377,19 +411,29 @@ const onRoundOver = async (game) => {
                 model: 'User' 
             }
         });
+        const payload = {
+            _id: populatedGame._id,
+            gameStatus: populatedGame.gameStatus,
+            markets: populatedGame.markets,
+            sharedMarket: populatedGame.sharedMarket,
+            playerBoards: populatedGame.playerBoards,
+            playerToMove: populatedGame.playerToMove,
+            players: populatedGame.players,
+            roomId: populatedGame.roomId
+        };
 
         if(isGameOver(game)){
             console.log("Game is over");
             //if(true){
             for (const userId of game.players) {
                 const receiverSocketId = getReceiverSocketId(userId);
-                io.to(receiverSocketId).emit("GameOver",  populatedGame );
+                io.to(receiverSocketId).emit("GameOver",  payload );
             }
             return;
         }
         for (const userId of game.players) {
             const receiverSocketId = getReceiverSocketId(userId);
-            io.to(receiverSocketId).emit("UpdateGame",  populatedGame );
+            io.to(receiverSocketId).emit("UpdateGame",  payload );
         }
         //temp vege
         //await game.save();
@@ -521,22 +565,10 @@ export const takeTiles = async (req, res) => {
                 if (playerBoard.collectedTiles[row].includes('empty')) {
                     const emptyIndex = playerBoard.collectedTiles[row].indexOf('empty');
                     playerBoard.collectedTiles[row][emptyIndex] = tile;
-                    const tileIndex = marketCopy.indexOf(tile);
-                    io.emit("MoveTile", {
-                        from: { marketId: source, index: tileIndex },
-                        to: { playerBoardId: playerBoard._id, type: "collected", index: `${row}${emptyIndex}` }
-                    });
-                    marketCopy[tileIndex] = "empty";
                 } else {
                     const emptyIndex = playerBoard.floorTiles.findIndex(tile => tile === 'empty');
                     if (emptyIndex !== -1) {
                         playerBoard.floorTiles[emptyIndex] = tile;
-                        const tileIndex = marketCopy.indexOf(tile);
-                        io.emit("MoveTile", {
-                            from: { marketId: source, index: tileIndex },
-                            to: { playerBoardId: playerBoard._id, type: "floor", index: emptyIndex }
-                        });
-                        marketCopy[tileIndex] = "empty";
                     }
                 }
             }
@@ -560,11 +592,21 @@ export const takeTiles = async (req, res) => {
                 model: 'User'
             }
         });
+        const payload = {
+            _id: populatedGame._id,
+            gameStatus: populatedGame.gameStatus,
+            markets: populatedGame.markets,
+            sharedMarket: populatedGame.sharedMarket,
+            playerBoards: populatedGame.playerBoards,
+            playerToMove: populatedGame.playerToMove,
+            players: populatedGame.players,
+            roomId: populatedGame.roomId
+        };
 
         // Emit UpdateGame event to all players involved in the game
         for (const userId of game.players) {
             const receiverSocketId = getReceiverSocketId(userId);
-            io.to(receiverSocketId).emit("TakeTiles", populatedGame);
+            io.to(receiverSocketId).emit("TakeTiles", payload);
         }
 
         res.status(200).json({ message: "Tiles taken successfully" });
@@ -604,10 +646,20 @@ export const getGame = async (req, res) => {
               model: 'User' 
             }
           });
+          const payload = {
+            _id: populatedGame._id,
+            gameStatus: populatedGame.gameStatus,
+            markets: populatedGame.markets,
+            sharedMarket: populatedGame.sharedMarket,
+            playerBoards: populatedGame.playerBoards,
+            playerToMove: populatedGame.playerToMove,
+            players: populatedGame.players,
+            roomId: populatedGame.roomId
+        };
         for (const userId of game.players) {
             const receiverSocketId = getReceiverSocketId(userId);
-            io.to(receiverSocketId).emit("GetGame", populatedGame );
-            io.to(receiverSocketId).emit("UpdateGame", populatedGame );
+            io.to(receiverSocketId).emit("GetGame", payload );
+            io.to(receiverSocketId).emit("UpdateGame", payload );
         }
 
         res.status(200).json(game);
@@ -650,19 +702,28 @@ export const leaveCurrentGame = async (userId) => {
               model: 'User' 
             }
           });
-          console.log("populatedGame: ", populatedGame);
+          const payload = {
+            _id: populatedGame._id,
+            gameStatus: populatedGame.gameStatus,
+            markets: populatedGame.markets,
+            sharedMarket: populatedGame.sharedMarket,
+            playerBoards: populatedGame.playerBoards,
+            playerToMove: populatedGame.playerToMove,
+            players: populatedGame.players,
+            roomId: populatedGame.roomId
+        };
 
         if(game.players.length > 1){
             for (const _userId of game.players) {
                 const receiverSocketId = getReceiverSocketId(_userId);
-                io.to(receiverSocketId).emit("UpdateGame",  populatedGame );
+                io.to(receiverSocketId).emit("UpdateGame",  payload );
             }
         }
         else{
             game.gameStatus = "ended";
             for (const _userId of game.players) {
                 const receiverSocketId = getReceiverSocketId(_userId);
-                io.to(receiverSocketId).emit("GameOver",  populatedGame );
+                io.to(receiverSocketId).emit("GameOver",  payload );
             }
         }
     }

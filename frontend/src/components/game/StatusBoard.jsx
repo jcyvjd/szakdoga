@@ -18,7 +18,7 @@ const StatusBoard = ({ users, authUserId, onToggleReady }) => {
         </thead>
         <tbody>
           {users.map((user, index) => (
-            <tr key={user._id.toString()} 
+            <tr key={index} 
             className="hover">
               <th>{index + 1}</th>
               <td>{user.username}</td>
