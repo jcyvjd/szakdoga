@@ -433,7 +433,7 @@ const onRoundOver = async (game) => {
         }
         for (const userId of game.players) {
             const receiverSocketId = getReceiverSocketId(userId);
-            io.to(receiverSocketId).emit("UpdateGame",  payload );
+            io.to(receiverSocketId).emit("RoundOver",  payload );
         }
         //temp vege
         //await game.save();

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSocketContext } from "../context/SocketContext";
 import { useGameContext } from "../context/GameContext";
 import { useAuthContext } from "../context/AuthContext";
-import { animateTakeTiles} from "../utils/AnimateChanges";
+import { animateRoundOver, animateTakeTiles} from "../utils/AnimateChanges";
 import toast from "react-hot-toast";
 
 const useListenGame = () => {
@@ -12,15 +12,15 @@ const useListenGame = () => {
 
     useEffect(() => {
         socket?.on("NewGame", (game) => {
-            setGameState(game);
+            //setGameState(game);
         });
 
         socket?.on("GetGame", (game) => {
-            setGameState(game);
+            //setGameState(game);
         });
 
         socket?.on("UpdateGame", (game) => {
-            setGameState(game);
+            //setGameState(game);
         });
 
         socket?.on("GameOver", (game) => {
@@ -29,6 +29,13 @@ const useListenGame = () => {
             if (gameStatus === "ended") {
                 setGameState(game);
             }
+        });
+
+        socket?.on("RoundOver", (game) => {
+            animateRoundOver(gameState, game);
+            setTimeout(() => {
+                setGameState(game);
+              }, 500); // Delay the state update to allow the animation to complete
         });
         
 

@@ -1,10 +1,28 @@
+import { useState, useEffect } from "react";
 
+//const [animationQueue, setAnimationQueue] = useState([]);
+
+// useEffect(() => {
+//     if (animationQueue.length > 0) {
+//         const { fromElementId, toElementId } = animationQueue[0];
+//         handleTileMove({ fromElementId, toElementId });
+//         setAnimationQueue(animationQueue.slice(1));
+//     }
+// }, [animationQueue]);
+const WallTilePattern = [
+    ['blue', 'yellow', 'red', 'black', 'azure'],
+    ['azure', 'blue', 'yellow', 'red', 'black'],
+    ['black', 'azure', 'blue', 'yellow', 'red'],
+    ['red', 'black', 'azure', 'blue', 'yellow'],
+    ['yellow', 'red', 'black', 'azure', 'blue'],
+  ];
 
 export const animateTakeTiles = (previousState, currentState) => {
     if (!previousState || !currentState) return null;
     //if (!validateGameState(previousState) || !validateGameState(currentState)) return null;
     console.log("AnimateTakeTiles", previousState, currentState);
     try {
+        const animations = [];
         const playerId = previousState.playerToMove;
 
         let prevMarket = null;
@@ -39,10 +57,14 @@ export const animateTakeTiles = (previousState, currentState) => {
                     if (prevPlayerBoard.collectedTiles[row][tileInd] !== currentPlayerBoard.collectedTiles[row][tileInd]) {
                         const fromElementId = `market-${marketId}-tile-${prevMarket.indexOf(currentPlayerBoard.collectedTiles[row][tileInd])}`;
                         const toElementId = `playerBoard-${prevPlayerBoard._id}-col-${row}-tile-${tileInd}`;
-                        handleTileMove({
-                            fromElementId,
-                            toElementId,
-                        })
+                        
+                        //setAnimationQueue([...animationQueue, { fromElementId, toElementId }]);
+
+                        // if(animationQueue.length === 0){
+                        //     handleTileMove({ fromElementId, toElementId });
+                        // }
+                        animations.push({ fromElementId, toElementId });
+
                         prevMarket[prevMarket.indexOf(currentPlayerBoard.collectedTiles[row][tileInd])] = 'empty';
                     }
                 }
@@ -52,13 +74,27 @@ export const animateTakeTiles = (previousState, currentState) => {
                 if(prevPlayerBoard.floorTiles[tileInd] !== currentPlayerBoard.floorTiles[tileInd]){
                     const fromElementId = `market-${marketId}-tile-${prevMarket.indexOf(currentPlayerBoard.floorTiles[tileInd])}`;
                     const toElementId = `playerBoard-${prevPlayerBoard._id}-floor-tile-${tileInd}`;
-                    handleTileMove({
-                        fromElementId,
-                        toElementId,
-                    })
+                    
+                    //setAnimationQueue([...animationQueue, { fromElementId, toElementId }]);
+                    animations.push({ fromElementId, toElementId });
                     prevMarket[prevMarket.indexOf(currentPlayerBoard.floorTiles[tileInd])] = 'empty';
                 }
             }
+            //rest of the market to sharedMarket
+            for(let tileInd = 0; tileInd < prevMarket.length; ++tileInd){
+                if(prevMarket[tileInd] !== 'empty'){
+                    const fromElementId = `market-${marketId}-tile-${tileInd}`;
+                    const lastSharedIndexPlusOne = previousState.sharedMarket.length;
+                    const toElementId = `market-${-1}`;
+                    //const toElementId = `market-${-1}-tile-${lastSharedIndexPlusOne}`;
+                    
+                    //setAnimationQueue([...animationQueue, { fromElementId, toElementId }]);
+                    animations.push({ fromElementId, toElementId });
+                }
+            }
+            animations.forEach((animation) => {
+                handleTileMove(animation);
+            });
         }
         //ha prevMarket null, akkor nem takeTile tortent (talan korVege)
     } catch (error) {
@@ -72,8 +108,9 @@ export const animateRoundOver = (previousState, currentState) => {
     if (!previousState || !currentState) return null;
     console.log("AnimateRoundOver", previousState, currentState);
     try {
+        const animations = [];
         // Iterate through player boards to find differences
-        for (let playerBoardIndex = 0; playerBoardIndex < currentStateState.playerBoards.length; playerBoardIndex++) {
+        for (let playerBoardIndex = 0; playerBoardIndex < currentState.playerBoards.length; playerBoardIndex++) {
             const prevPlayerBoard = previousState.playerBoards[playerBoardIndex];
             const currentPlayerBoard = currentState.playerBoards[playerBoardIndex];
 
@@ -83,36 +120,38 @@ export const animateRoundOver = (previousState, currentState) => {
                 const currentCollectedTilesRow = currentPlayerBoard.collectedTiles[row];
 
                 // Check if the collected tiles row has changed
-                if (JSON.stringify(prevCollectedTilesRow) !== JSON.stringify(currentCollectedTilesRow)) {
+                // ha mar az elso elem prev !== empty es current elso === empty , kell mozgatni
+                if ((prevCollectedTilesRow[0] !== 'empty') && (currentCollectedTilesRow[0] === 'empty')) {
                     // Find the last element to move to the wall position
-                    const lastElement = currentCollectedTilesRow[currentCollectedTilesRow.length - 1];
+                    const lastElement = prevCollectedTilesRow[prevCollectedTilesRow.length - 1];
                     const lastElementIndex = prevCollectedTilesRow.indexOf(lastElement);
 
+                    const wallIndex = WallTilePattern[row].indexOf(lastElement);
                     if (lastElement !== undefined && lastElementIndex !== -1) {
                         const fromElementId = `playerBoard-${prevPlayerBoard._id}-col-${row}-tile-${lastElementIndex}`;
-                        const toElementId = `playerBoard-${prevPlayerBoard._id}-wall-${row}-${lastElement}`;
+                        const toElementId = `playerBoard-${prevPlayerBoard._id}-wall-${row}-tile${wallIndex}`;
 
-                        handleTileMove({
-                            fromElementId,
-                            toElementId,
-                        });
+                        //setAnimationQueue([...animationQueue, { fromElementId, toElementId }]);
+                        animations.push({ fromElementId, toElementId });
 
                         // Animate the rest of the collected tiles to the shared market center
                         for (let tileInd = 0; tileInd < prevCollectedTilesRow.length; ++tileInd) {
                             if (tileInd !== lastElementIndex && prevCollectedTilesRow[tileInd] !== 'empty') {
                                 const fromElementId = `playerBoard-${prevPlayerBoard._id}-col-${row}-tile-${tileInd}`;
-                                const toElementId = `sharedMarket-center`;
+                                const toElementId = `market-${-1}`;
 
-                                handleTileMove({
-                                    fromElementId,
-                                    toElementId,
-                                });
+                                //setAnimationQueue([...animationQueue, { fromElementId, toElementId }]);
+                                animations.push({ fromElementId, toElementId });
                             }
                         }
                     }
                 }
             }
         }
+        animations.forEach((animation) => {
+            console.log("ANIMATION ROUND OVER", animation);
+            handleTileMove(animation);
+        });
     } catch (error) {
         console.error(error);
     }
@@ -157,6 +196,9 @@ const handleTileMove = (data) => {
                 easing: 'ease-in-out'
             }).onfinish = () => {
                 document.body.removeChild(tempTile);
+
+                //trigger next animation
+                //setAnimationQueue(animationQueue.slice(1));
             };
         }
     } catch (error) {
