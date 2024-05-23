@@ -422,9 +422,9 @@ const onRoundOver = async (game) => {
             roomId: populatedGame.roomId
         };
 
-        if(isGameOver(game)){
+        //if(isGameOver(game)){
             console.log("Game is over");
-            //if(true){
+            if(true){
             for (const userId of game.players) {
                 const receiverSocketId = getReceiverSocketId(userId);
                 io.to(receiverSocketId).emit("GameOver",  payload );
@@ -518,7 +518,7 @@ export const takeTiles = async (req, res) => {
             });
         }
 
-         let tilesToTake = [];
+        let tilesToTake = [];
         if (source >= 0) {
             game.markets[source].forEach((tile, tileIndex) => {
                 if (tile === color) {

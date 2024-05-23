@@ -22,12 +22,12 @@ const Tile = ({ tile, onClick, isSelected, id }) => (
       border: isSelected ? '3px solid #000' : '1px solid #ddd',
       backgroundImage: tile ? `url(${tileImages[tile]})` : 'none',
       backgroundSize: 'cover',
-      cursor: 'pointer',
+      cursor: tile !== 'empty' ? 'pointer' : 'default',
     }}
     className={`w-8 h-8 rounded-md cursor-pointer mx-1 my-1 ${
       tile ? `bg-${tile}` : 'bg-gray-300'
     }`}
-    onClick={onClick}
+    onClick={tile !== 'empty' ? onClick : null}
   />
 );
 

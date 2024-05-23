@@ -81,19 +81,24 @@ export const animateTakeTiles = (previousState, currentState) => {
                 }
             }
             //rest of the market to sharedMarket
-            for(let tileInd = 0; tileInd < prevMarket.length; ++tileInd){
-                if(prevMarket[tileInd] !== 'empty'){
-                    const fromElementId = `market-${marketId}-tile-${tileInd}`;
-                    const lastSharedIndexPlusOne = previousState.sharedMarket.length;
-                    const toElementId = `market-${-1}`;
-                    //const toElementId = `market-${-1}-tile-${lastSharedIndexPlusOne}`;
-                    
-                    //setAnimationQueue([...animationQueue, { fromElementId, toElementId }]);
-                    animations.push({ fromElementId, toElementId });
+            if(marketId !== -1)
+            {    
+                for(let tileInd = 0; tileInd < prevMarket.length; ++tileInd){
+                    if(prevMarket[tileInd] !== 'empty'){
+                        const fromElementId = `market-${marketId}-tile-${tileInd}`;
+                        const lastSharedIndexPlusOne = previousState.sharedMarket.length;
+                        const toElementId = `market-${-1}`;
+                        //const toElementId = `market-${-1}-tile-${lastSharedIndexPlusOne}`;
+                        
+                        //setAnimationQueue([...animationQueue, { fromElementId, toElementId }]);
+                        animations.push({ fromElementId, toElementId });
+                    }
                 }
             }
             animations.forEach((animation) => {
-                handleTileMove(animation);
+                //setTimeout(() => {
+                    handleTileMove(animation);
+                //}, 500);
             });
         }
         //ha prevMarket null, akkor nem takeTile tortent (talan korVege)

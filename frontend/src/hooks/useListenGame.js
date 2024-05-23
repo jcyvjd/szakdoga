@@ -12,15 +12,20 @@ const useListenGame = () => {
 
     useEffect(() => {
         socket?.on("NewGame", (game) => {
-            //setGameState(game);
+            setGameState(game);
         });
 
         socket?.on("GetGame", (game) => {
-            //setGameState(game);
+            console.log("GetGame");
+            setGameState(game);
         });
 
         socket?.on("UpdateGame", (game) => {
-            //setGameState(game);
+            setGameState(game);
+        });
+
+        socket?.on("NewRound", (game) => {
+            setGameState(game);
         });
 
         socket?.on("GameOver", (game) => {
