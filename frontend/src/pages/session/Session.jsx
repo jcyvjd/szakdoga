@@ -61,7 +61,7 @@ const Session = () => {
       return;
     }
     console.log("SETUP");
-    if (room ) {
+    if (room && room.users[0]._id === authUser._id) {
       await setupGame();
       console.log("SETUP UTAN");
     }
@@ -135,6 +135,7 @@ const Session = () => {
   useEffect(() => {
     socket?.on("GameOver", (data) => {
       setGameOver(true);
+      console.log("Game Over: ");
       setFinalPlayedBoards(data.playerBoards);
       setGameState(null);
     });

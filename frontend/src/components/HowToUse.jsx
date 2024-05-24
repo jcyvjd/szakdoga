@@ -3,7 +3,7 @@ import React from 'react';
 const HowToUse = () => (
     <div className='h-full overflow-auto no-scrollbar'>
         
-        In the following document we will explain how to use this application.
+        In the following document we will explain how this application works.
 
         <h2>Sign in</h2>
         When you load up the site, you will be greeted with a login screen. You can either login with an existing account or create a new one.

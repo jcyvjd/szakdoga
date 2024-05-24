@@ -1,13 +1,17 @@
 import {useState} from 'react'
 import { useRoomContext } from '../context/RoomContext.jsx'
 import { useAuthContext } from '../context/AuthContext'
+import { useGameContext } from '../context/GameContext.jsx'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
+
+
 
 const useJoinRoom = () => {
     const {rooms,setRooms} = useRoomContext();
     const [loading, setLoading] = useState(false);
     const {authUser, setAuthUser} = useAuthContext();
+    const {setGameState} = useGameContext();
     const navigate = useNavigate();
 
     const joinRoom = async (room) => {
@@ -45,6 +49,7 @@ const useJoinRoom = () => {
     
             if(response.ok){
                 setAuthUser({...authUser, roomId: null});
+                setGameState(null);
                 navigate(`/`);
             }else{
                 throw new Error(response.statusText)

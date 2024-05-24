@@ -176,6 +176,7 @@ const startNewRound = async (game) => {
         if(game.markets.length === game.players.length + 3){
             game.markets = newMarkets(game.players.length + 3);
         }
+        console.log("New round pllayers: ", game.players)
         
         await loadMarkets(game);
         game.sharedMarket = ['white'];
@@ -204,9 +205,9 @@ const startNewRound = async (game) => {
         for (const userId of game.players) {
             console.log("StartNewRound userId: ", userId)
             const receiverSocketId = getReceiverSocketId(userId);
-            io.to(receiverSocketId).emit("UpdateGame", payload );
+            io.to(receiverSocketId).emit("NewRound", payload );
         }
-
+        console.log("NewRound end Players: ", game.players)
     } catch (error) {
         console.log("Error in startNewRound: ", error.message);
     }
@@ -422,9 +423,9 @@ const onRoundOver = async (game) => {
             roomId: populatedGame.roomId
         };
 
-        //if(isGameOver(game)){
+        if(isGameOver(game)){
             console.log("Game is over");
-            if(true){
+            //if(true){
             for (const userId of game.players) {
                 const receiverSocketId = getReceiverSocketId(userId);
                 io.to(receiverSocketId).emit("GameOver",  payload );
@@ -573,15 +574,8 @@ export const takeTiles = async (req, res) => {
                 }
             }
         }
-
-        // Check if round is over
-        if (isRoundOver(game)) {
-            console.log("Round is over");
-            await onRoundOver(game);
-        } else {
-            game.playerToMove = game.players[(game.players.indexOf(req.user.id) + 1) % game.players.length];
-        }
-
+        game.playerToMove = game.players[(game.players.indexOf(req.user.id) + 1) % game.players.length];
+        
         await game.save();
         await playerBoard.save();
 
@@ -602,11 +596,14 @@ export const takeTiles = async (req, res) => {
             players: populatedGame.players,
             roomId: populatedGame.roomId
         };
-
         // Emit UpdateGame event to all players involved in the game
         for (const userId of game.players) {
             const receiverSocketId = getReceiverSocketId(userId);
             io.to(receiverSocketId).emit("TakeTiles", payload);
+        }
+
+        if(isRoundOver(game)){
+            await onRoundOver(game);
         }
 
         res.status(200).json({ message: "Tiles taken successfully" });
@@ -628,6 +625,7 @@ export const getGame = async (req, res) => {
         const game = await Game.findOne({ roomId: roomId }).populate('playerBoards');
 
         if (!game) {
+            console.log("No such game")
             const receiverSocketId = getReceiverSocketId(req.user._id);
             io.to(receiverSocketId).emit("GetGame", null );
             io.to(receiverSocketId).emit("UpdateGame", null );
@@ -659,7 +657,7 @@ export const getGame = async (req, res) => {
         for (const userId of game.players) {
             const receiverSocketId = getReceiverSocketId(userId);
             io.to(receiverSocketId).emit("GetGame", payload );
-            io.to(receiverSocketId).emit("UpdateGame", payload );
+            //io.to(receiverSocketId).emit("UpdateGame", payload );
         }
 
         res.status(200).json(game);
@@ -674,12 +672,13 @@ export const leaveCurrentGame = async (userId) => {
         //find game user is in
         const game = await Game.findOne({ players: userId }).populate('playerBoards');
         if(!game){
+            console.log("No game found for user");
             return;
         }
-
         //find playerBoard, delete it and remove it from game
         const playerBoard = await PlayerBoard.findOneAndDelete({ playerId: userId });
         if(!playerBoard){ return; }
+
         const index = game.playerBoards.findIndex(board => board.playerId.toString() === userId.toString());
         if (index > -1) {
             console.log("playerBoard deleted");
@@ -690,8 +689,8 @@ export const leaveCurrentGame = async (userId) => {
         if(game.playerToMove.toString() === userId.toString()){
             game.playerToMove = game.players[(game.players.indexOf(userId) + 1) % game.players.length];
         }
-        game.players = game.players.filter(player => player.toString() !== userId.toString());
         
+        game.players = game.players.filter(player => player.toString() !== userId.toString());
 
         await game.save();
 
@@ -720,10 +719,12 @@ export const leaveCurrentGame = async (userId) => {
             }
         }
         else{
+            console.log("Game is over, 1 player left");
             game.gameStatus = "ended";
             for (const _userId of game.players) {
                 const receiverSocketId = getReceiverSocketId(_userId);
                 io.to(receiverSocketId).emit("GameOver",  payload );
+                console.log("GameOverSent", _userId)
             }
         }
     }

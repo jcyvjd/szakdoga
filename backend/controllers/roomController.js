@@ -26,7 +26,7 @@ export const getRoom = async (req,res) => {
             return res.status(404).json({error: 'No such room'})
         }
 
-        const room = await Room.findById(id)
+        const room = await Room.findById(id).populate("users")
 
         if (!room) {
             return res.status(404).json({error: 'No such room'})
@@ -53,6 +53,7 @@ export const createRoom = async (req, res) => {
             users: [],
             gameId: null
         })
+        room.populate("users");
         //SOCKET IO
         io.emit("newRoom", room);
 
@@ -129,19 +130,20 @@ export const leaveRoom = async (req,res) => {
             { _id: roomId },
             { $pull: { users: loggedInUserId }}, 
             { new: true } // to return the updated room document
-        ).populate("users")
+        )
 
         if(!room){
             return res.status(400).json({error:"No room found with such id"})
         }
         if(room.gameId){
-            leaveCurrentGame(loggedInUserId);
+            await leaveCurrentGame(loggedInUserId);
         }
+        room.populate("users");
 
         if(room.users.length === 0){
             await Room.findByIdAndDelete(roomId);
             io.emit("deleteRoom", room);
-            deleteGame(room.gameId);
+            await deleteGame(room.gameId);
         }
         //SOCKET IO
         io.emit("updateRoom", room)

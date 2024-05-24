@@ -86,12 +86,13 @@ export const animateTakeTiles = (previousState, currentState) => {
                 for(let tileInd = 0; tileInd < prevMarket.length; ++tileInd){
                     if(prevMarket[tileInd] !== 'empty'){
                         const fromElementId = `market-${marketId}-tile-${tileInd}`;
-                        const lastSharedIndexPlusOne = previousState.sharedMarket.length;
-                        const toElementId = `market-${-1}`;
+                        const middleIndex = Math.floor(prevMarket.length / 2);
+                        const toElementId = `market-${-1}-tile-${middleIndex}`;
                         //const toElementId = `market-${-1}-tile-${lastSharedIndexPlusOne}`;
                         
                         //setAnimationQueue([...animationQueue, { fromElementId, toElementId }]);
                         animations.push({ fromElementId, toElementId });
+                        prevMarket[tileInd] = 'empty';
                     }
                 }
             }
@@ -136,17 +137,21 @@ export const animateRoundOver = (previousState, currentState) => {
                         const fromElementId = `playerBoard-${prevPlayerBoard._id}-col-${row}-tile-${lastElementIndex}`;
                         const toElementId = `playerBoard-${prevPlayerBoard._id}-wall-${row}-tile${wallIndex}`;
 
-                        //setAnimationQueue([...animationQueue, { fromElementId, toElementId }]);
                         animations.push({ fromElementId, toElementId });
 
                         // Animate the rest of the collected tiles to the shared market center
                         for (let tileInd = 0; tileInd < prevCollectedTilesRow.length; ++tileInd) {
                             if (tileInd !== lastElementIndex && prevCollectedTilesRow[tileInd] !== 'empty') {
                                 const fromElementId = `playerBoard-${prevPlayerBoard._id}-col-${row}-tile-${tileInd}`;
-                                const toElementId = `market-${-1}`;
-
-                                //setAnimationQueue([...animationQueue, { fromElementId, toElementId }]);
-                                animations.push({ fromElementId, toElementId });
+                                // const smMiddleIndex = Math.floor(previousState.sharedMarket.length / 2);
+                                // const toElementId = `market-${-1}-tile-${smMiddleIndex}`;
+                                // animations.push({ fromElementId, toElementId });
+                                const fromElement = document.getElementById(fromElementId);
+                                if (fromElement) {
+                                    fromElement.style.transition = 'background-image 0.5s';
+                                    fromElement.style.backgroundImage = 'none';
+                                }
+                                
                             }
                         }
                     }

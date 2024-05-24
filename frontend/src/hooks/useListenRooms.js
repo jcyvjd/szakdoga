@@ -2,10 +2,14 @@ import { useEffect } from "react";
 
 import { useSocketContext } from "../context/SocketContext";
 import { useRoomContext } from "../context/RoomContext";
+import { useAuthContext } from "../context/AuthContext";
+import { useGameContext } from "../context/GameContext";
 
 const useListenRooms = () => {
     const { socket } = useSocketContext();
     const { setRooms, rooms } = useRoomContext();
+    const { authUser, setAuthUser } = useAuthContext();
+    const { setGameState } = useGameContext();
 
     useEffect(() => {
         socket?.on("newRoom", (room) => {
@@ -14,6 +18,10 @@ const useListenRooms = () => {
 
         socket?.on("deleteRoom", (room) => {
             setRooms(rooms.filter((existingRoom) => existingRoom._id !== room._id));
+            if (authUser.roomId === room._id) {
+                setAuthUser({ ...authUser, roomId: null });
+                setGameState(null);
+            }
         });
 
         socket?.on("updateRoom", (room) => {
