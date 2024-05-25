@@ -230,7 +230,7 @@ const Session = () => {
           )}
           {/* Game Board */}
           {gameState && !gameOver && (
-            <div className="overflow-y-auto no-scrollbar items-center">
+            <div className="flex flex-wrap justify-around text-center w-full overflow-y-auto no-scrollbar items-center">
               {/* Conditionally render first row */}
               {gameState.playerBoards[2] && (
                 <div className="m-5 inline-block">
@@ -251,7 +251,7 @@ const Session = () => {
               {/* Second row */}
               <div className="block">
                 <div className="flex flex-wrap justify-around text-center w-full">
-                  <div className="w-full justify-around">
+                  <div className="flex flex-wrap pt-5 justify-around text-center w-full">
                     {gameState.markets.map((market, index) => (
                       <div className="inline-block m-1" key={index}>
                         <Market
