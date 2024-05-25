@@ -177,7 +177,7 @@ const Session = () => {
         {/* Left side panel */}
         <div
           className={`w-full lg:w-1/3 lg:h-full lg:fixed lg:top-0 lg:left-0 lg:bottom-0 lg:z-10 p-4 space-y-2
-            ${isPanelOpen ? 'slide-in' : 'slide-out'} lg:!translate-x-0 lg:!opacity-100 lg:!slide-in`}
+            ${isPanelOpen ? 'slide-in block' : 'slide-out hidden'} lg:!translate-x-0 lg:!opacity-100 lg:block lg:!slide-in`}
         >
           {/* Buttons Div */}
           <div className="flex flex-grow justify-between">
