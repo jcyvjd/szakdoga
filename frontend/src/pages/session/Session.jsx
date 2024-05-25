@@ -158,26 +158,26 @@ const Session = () => {
 
   return (
     <div className="h-full flex flex-col">
-    <a
-      onClick={() => setIsPanelOpen(!isPanelOpen)}
-      className="lg:hidden text-center block rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
-      data-twe-collapse-init
-      data-twe-ripple-init
-      data-twe-ripple-color="light"
-      href="#collapseExample"
-      role="button"
-      aria-expanded="false"
-      aria-controls="collapseExample"
-    >
-      {isPanelOpen ? "Back to Game" : "Menu"}
-    </a>
+      <a
+        onClick={() => setIsPanelOpen(!isPanelOpen)}
+        className="lg:hidden text-center block rounded bg-primary px-6 pb-2 pt-2.5 
+          text-xs font-medium uppercase leading-normal text-white shadow-primary-3 
+          transition duration-150 ease-in-out hover:bg-primary-accent-300 
+          hover:shadow-primary-2 focus:bg-primary-accent-300 
+          focus:shadow-primary-2 focus:outline-none focus:ring-0 
+          active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 
+          dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong 
+          dark:active:shadow-dark-strong"
+        style={{ cursor: "pointer" }}
+      >
+        {isPanelOpen ? "Back to Game" : "Menu"}
+      </a>
       {/* Main content area */}
-      <div className="lg:flex h-full overflow-auto no-scrollbar">
+      <div className="lg:flex lg:flex-row h-full overflow-auto no-scrollbar">
         {/* Left side panel */}
         <div
-          className={`collapse w-full lg:flex lg:w-1/3 ${isPanelOpen ? 'flex' : 'hidden'} flex-grow flex-col p-4 space-y-2 `}
-          id="collapseExample"
-          data-twe-collapse-item
+          className={`w-full lg:w-1/3 lg:h-full lg:fixed lg:top-0 lg:left-0 lg:bottom-0 lg:z-10 p-4 space-y-2
+            ${isPanelOpen ? 'slide-in' : 'slide-out'} lg:!translate-x-0 lg:!opacity-100 lg:!slide-in`}
         >
           {/* Buttons Div */}
           <div className="flex flex-grow justify-between">
@@ -191,9 +191,7 @@ const Session = () => {
               <button
                 onClick={handleToggleReady}
                 className={`inline-flex flex-1 items-center justify-center py-2 px-4 rounded-md ${
-                  playerReady
-                    ? "bg-success text-success-content"
-                    : "bg-base-200 text-base-content"
+                  playerReady ? "bg-success text-success-content" : "bg-base-200 text-base-content"
                 }`}
               >
                 {playerReady ? "Ready" : "Not Ready"}
@@ -205,7 +203,7 @@ const Session = () => {
           </div>
         </div>
         {/* Right side content */}
-        <div className={`w-full lg:w-2/3 flex lg:flex-col overflow-auto items-center justify-center ${!isPanelOpen ? 'flex' : 'hidden'}`}>
+        <div className={`w-full lg:w-2/3 lg:ml-auto lg:relative flex flex-col overflow-auto items-center justify-center transition-opacity duration-300 ease-in-out ${!isPanelOpen ? 'flex' : 'hidden'} lg:!flex`}>
           {/* Status Board */}
           {!gameState && !gameOver && room && room.users.length > 0 && (
             <div className="flex-grow flex justify-center items-center">

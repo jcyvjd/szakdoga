@@ -25,7 +25,7 @@ const useJoinRoom = () => {
             if(response.ok){
                 setAuthUser({...authUser, roomId: data._id});
                 navigate(`/session/${room._id}`);
-
+                setGameState(null);
             } else{
                 throw new Error(response.statusText)
             }
