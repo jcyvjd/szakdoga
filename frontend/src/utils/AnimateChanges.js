@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
 
+import tile_red from '../assets/tiles/tile_red.png';
+import tile_blue from '../assets/tiles/tile_blue.png';
+import tile_azure from '../assets/tiles/tile_azure.png';
+import tile_black from '../assets/tiles/tile_black.png';
+import tile_yellow from '../assets/tiles/tile_yellow.png';
+import tile_white from '../assets/tiles/tile_white.png';
+
 const WallTilePattern = [
     ['blue', 'yellow', 'red', 'black', 'azure'],
     ['azure', 'blue', 'yellow', 'red', 'black'],
@@ -118,6 +125,7 @@ export const animateRoundOver = (previousState, currentState) => {
                     const lastElementIndex = prevCollectedTilesRow.indexOf(lastElement);
 
                     const wallIndex = WallTilePattern[row].indexOf(lastElement);
+                    console.log("ROUNDOVER wallIndex", wallIndex);
                     if (lastElement !== undefined && lastElementIndex !== -1) {
                         const fromElementId = `playerBoard-${prevPlayerBoard._id}-col-${row}-tile-${lastElementIndex}`;
                         const toElementId = `playerBoard-${prevPlayerBoard._id}-wall-${row}-tile${wallIndex}`;
@@ -152,6 +160,77 @@ export const animateRoundOver = (previousState, currentState) => {
     }
 
     return null;
+};
+
+const getBGImage = (tile) => {
+    switch (tile) {
+        case 'red':
+            return `url(${tile_red})`;
+        case 'blue':
+            return `url(${tile_blue})`;
+        case 'azure':
+            return `url(${tile_azure})`;
+        case 'black':
+            return `url(${tile_black})`;
+        case 'yellow':
+            return `url(${tile_yellow})`;
+        case 'white':
+            return `url(${tile_white})`;
+        default:
+            return 'none';
+    }
+};
+
+export const animateNewRound = (previousState, currentState) => {
+    if (!previousState || !currentState) return null;
+    return null;
+    try {
+        // Animate tiles in markets
+        currentState.markets.forEach((market, marketIndex) => {
+            market.forEach((tile, tileIndex) => {
+                const tileElement = document.getElementById(`market-${marketIndex}-tile-${tileIndex}`);
+                if (tileElement) {
+                    // Temporarily add transition class
+                    tileElement.classList.add("transition-opacity");
+                    tileElement.style.opacity = "0";
+                    tileElement.style.backgroundImage = getBGImage(tile);
+
+                    const transitionEndHandler = () => {
+                        tileElement.style.opacity = "1";
+                        tileElement.removeEventListener("transitionend", transitionEndHandler);
+
+                        // Remove transition class after transition ends
+                        setTimeout(() => {
+                            tileElement.classList.remove("transition-opacity");
+                        }, 500); // 500ms is the duration of the transition
+                    };
+
+                    tileElement.addEventListener("transitionend", transitionEndHandler);
+                }
+            });
+        });
+
+        // Animate white tile in sharedMarket
+        const sharedMarketTile = document.getElementById("market--1-tile-0");
+        if (sharedMarketTile) {
+            // Temporarily add transition class
+            sharedMarketTile.classList.add("transition-opacity");
+
+            const sharedMarketTransitionEndHandler = () => {
+                sharedMarketTile.style.opacity = "1";
+                sharedMarketTile.removeEventListener("transitionend", sharedMarketTransitionEndHandler);
+
+                // Remove transition class after transition ends
+                setTimeout(() => {
+                    sharedMarketTile.classList.remove("transition-opacity");
+                }, 500); // 500ms is the duration of the transition
+            };
+
+            sharedMarketTile.addEventListener("transitionend", sharedMarketTransitionEndHandler);
+        }
+    } catch (error) {
+        console.log("Error in animateNewRound: ", error);
+    }
 };
 
 

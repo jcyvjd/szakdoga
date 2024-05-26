@@ -2,6 +2,8 @@ import { Server } from 'socket.io';
 import http from 'http';
 import express from 'express';
 
+import { sendMessage, getMessages } from '../controllers/messageController.js';
+
 const app = express();
 
 const server = http.createServer(app);
@@ -25,6 +27,11 @@ io.on('connection', (socket) => {
     if (userId != "undefined") {
         userSocketMap[userId] = socket.id;
     }
+
+
+    socket.on("sendMessage", (data) => {sendMessage(socket, data)});
+    socket.on("getMessages", (data) => {getMessages(socket, data)});
+
 
     socket.on('disconnect', () => {
         delete userSocketMap[userId];

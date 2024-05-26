@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSocketContext } from "../context/SocketContext";
 import { useGameContext } from "../context/GameContext";
 import { useAuthContext } from "../context/AuthContext";
-import { animateRoundOver, animateTakeTiles, animatePlayerLeft} from "../utils/AnimateChanges";
+import { animateRoundOver, animateTakeTiles, animatePlayerLeft, animateNewRound} from "../utils/AnimateChanges";
 import toast from "react-hot-toast";
 
 const useListenGame = () => {
@@ -18,7 +18,8 @@ const useListenGame = () => {
                 case "NewGame":
                     setGameState(data);
                 case "NewRound":
-                    //animateNewRound(gameState, data);
+                    console.log("NewRound recieved: ")
+                    animateNewRound(gameState, data);
                     setGameState(data);
                 case "GameOver":
                     setGameState(data);

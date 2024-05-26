@@ -75,7 +75,8 @@ export const setupGame = async (req, res) => {
                 path: 'playerBoards',
                 populate: {
                   path: 'playerId',
-                  model: 'User' 
+                  model: 'User' ,
+                  select: '-password'
                 }
               });
               const payload = {
@@ -119,7 +120,8 @@ export const setupGame = async (req, res) => {
             path: 'playerBoards',
             populate: {
               path: 'playerId',
-              model: 'User' 
+              model: 'User' ,
+              select: '-password'
             }
           });
 
@@ -187,7 +189,8 @@ const startNewRound = async (game) => {
             path: 'playerBoards',
             populate: {
               path: 'playerId',
-              model: 'User' 
+              model: 'User',
+              select: '-password'
             }
           });
 
@@ -202,6 +205,7 @@ const startNewRound = async (game) => {
             roomId: populatedGame.roomId
         };
         
+        console.log("NewRound event")
         for (const userId of game.players) {
             console.log("StartNewRound userId: ", userId)
             const receiverSocketId = getReceiverSocketId(userId);
@@ -409,7 +413,8 @@ const onRoundOver = async (game) => {
             path: 'playerBoards',
             populate: {
                 path: 'playerId',
-                model: 'User' 
+                model: 'User',
+                select: '-password'
             }
         });
         const payload = {
@@ -583,7 +588,8 @@ export const takeTiles = async (req, res) => {
             path: 'playerBoards',
             populate: {
                 path: 'playerId',
-                model: 'User'
+                model: 'User',
+                select: '-password'
             }
         });
         const payload = {
@@ -624,7 +630,6 @@ export const getGame = async (req, res) => {
         console.log("roomId: ", roomId);
         const game = await Game.findOne({ roomId: roomId }).populate('playerBoards');
 
-        console.log("getGame game: ", game)
         if (!game) {
             console.log("No such game")
             const receiverSocketId = getReceiverSocketId(req.user._id);
@@ -633,7 +638,10 @@ export const getGame = async (req, res) => {
             
             return //res.status(404).json({ error: "No such game" });
         }
-        if(game.roomId !== roomId){
+        if(game.roomId.toString() !== roomId){
+            console.log("RoomId mismatch")
+            console.log("game.roomId: ", game.roomId)
+            console.log("roomId: ", roomId)
             return //ha veletlen a user benne maradt volna egy jatekba
         }
 
@@ -641,8 +649,9 @@ export const getGame = async (req, res) => {
         const populatedGame = await Game.findById(game._id).populate({
             path: 'playerBoards',
             populate: {
-              path: 'playerId',
-              model: 'User' 
+                path: 'playerId',
+                model: 'User',
+                select: '-password'
             }
           });
           const payload = {
@@ -706,7 +715,8 @@ export const leaveCurrentGame = async (userId) => {
             path: 'playerBoards',
             populate: {
               path: 'playerId',
-              model: 'User' 
+              model: 'User',
+              select: '-password'
             }
           });
 
