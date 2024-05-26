@@ -157,7 +157,8 @@ const startNewRound = async (game) => {
         if (!game) {
             throw new Error("No game found");
         }
-        if(game.markets.length === game.players.length + 3){
+        if(game.markets.length !== game.players.length + 3){
+            console.log("players count changed")
             game.markets = newMarkets(game.players.length + 3);
         }
         console.log("New round pllayers: ", game.players)

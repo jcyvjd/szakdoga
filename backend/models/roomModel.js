@@ -27,6 +27,14 @@ const roomSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Game',
         default: null
+    },
+    hasPassword:{
+        type: Boolean,
+        default: false
+    },
+    password:{
+        type: String,
+        default: null
     }
 },{ timestamps: true })
 

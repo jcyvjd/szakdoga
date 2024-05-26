@@ -4,14 +4,25 @@ import mongoose from "mongoose"
 import { io } from "../socket/socket.js"
 import Game from "../models/game/gameModel.js"
 import { leaveCurrentGame, deleteGame } from "./gameController.js"
+import bcrypt from "bcryptjs"
 
 export const getRooms = async (req, res) => {
     try {
         const allRooms = await Room.find().populate({ path: "users", select: '-password' }).sort({ createdAt: -1 });
 
-        res.status(200).json(allRooms)
+        const sanitizedRooms = allRooms.map(room => ({
+            _id: room._id,
+            name: room.name,
+            owner: room.owner,
+            chat: room.chat,
+            users: room.users,
+            gameId: room.gameId,
+            hasPassword: room.hasPassword // Only send hasPassword to the frontend
+        }));
 
-        io.emit("getRooms", allRooms)
+        res.status(200).json(sanitizedRooms)
+
+        io.emit("getRooms", sanitizedRooms)
 
     } catch (error) {
         console.log("Error in getRooms: ", error.message);
@@ -27,12 +38,13 @@ export const getRoom = async (req,res) => {
         }
 
         const room = await Room.findById(id).populate({ path: "users", select: '-password' })
-
+        
         if (!room) {
             return res.status(404).json({error: 'No such room'})
         }
 
-        res.status(200).json(room)
+        const sanitizedRoom = senetizeRoom(room);
+        res.status(200).json(sanitizedRoom)
 
     } catch (error) {
         console.log("Error in getRoom: ", error.message);
@@ -42,22 +54,35 @@ export const getRoom = async (req,res) => {
 
 export const createRoom = async (req, res) => {
     try {
-        const {name} =  req.body
+        const {name, password} =  req.body
         if(!name){
             return res.status(400).json({error:"No room name"})
+        }
+
+        let hashedPassword = null;
+        let hasPassword = false;
+        if(password && password.length > 0){
+            hasPassword = true;
+
+            const salt = await bcrypt.genSalt(10)
+            hashedPassword = await bcrypt.hash(password, salt)
         }
         const room = await Room.create({
             name,
             owner: req.user._id,
             chat: null,
             users: [],
-            gameId: null
+            gameId: null,
+            hasPassword,
+            password: hashedPassword
         })
         room.populate({ path: "users", select: '-password' });
-        //SOCKET IO
-        io.emit("newRoom", room);
 
-        res.status(200).json(room)
+        const sanitizedRoom = senetizeRoom(room);
+        //SOCKET IO
+        io.emit("newRoom", sanitizedRoom);
+
+        res.status(200).json(sanitizedRoom)
     } catch (error) {
         console.log("Error in createRoom: ", error.message);
         res.status(500).json({error:"Internal server error"});
@@ -67,8 +92,20 @@ export const createRoom = async (req, res) => {
 export const joinRoom = async (req,res) => {
     try {
         const loggedInUserId = req.user._id
-        const roomId = req.params.id
+        const roomId = req.body.roomId
+        const password = req.body.password
 
+        let room = await Room.findById({_id: roomId}).populate({ path: "users", select: '-password' });
+        if(!room){
+            return res.status(400).json({error:"No room found with such id"})
+        }
+        
+        if(room.hasPassword){
+            const isPasswordCorrect = await bcrypt.compare(password, room?.password || "")
+            if(!isPasswordCorrect){
+                return res.status(400).json({error:"Invalid password"})
+            }
+        }
 //elozobol ki kell venni ha benne van
         await Room.findOneAndUpdate(
             {_id: req.user.roomId},
@@ -93,17 +130,17 @@ export const joinRoom = async (req,res) => {
             { new: true }
         )
 
-        const room = await Room.findOneAndUpdate(
+        room = await Room.findOneAndUpdate(
             { _id: roomId },
             { $addToSet: { users: loggedInUserId } }, // $addToSet adds to array if not already present
             { new: true } // to return the updated room document
         ).populate({ path: "users", select: '-password' })
-        if(!room){
-            return res.status(400).json({error:"No room found with such id"})
-        }
+
+        const senitizedRoom = senetizeRoom(room);
+
         //SOCKET IO
-        io.emit("updateRoom", room)
-        res.status(200).json(room)
+        io.emit("updateRoom", senitizedRoom)
+        res.status(200).json(senitizedRoom)
 
     } catch (error) {
         console.log("Error in joinRoom: ", error.message);
@@ -154,18 +191,20 @@ export const leaveRoom = async (req, res) => {
 
         // If the room is empty, delete it and its associated game
         updatedRoom.populate({ path: "users", select: '-password' });
+        const senitizedRoom = senetizeRoom(updatedRoom);
+
         if (updatedRoom.users.length === 0) {
             await Room.findByIdAndDelete(roomId);
-            io.emit("deleteRoom", updatedRoom);
+            io.emit("deleteRoom", senitizedRoom);
 
             if (updatedRoom.gameId) {
                 await deleteGame(updatedRoom.gameId);
             }
         } else {
-            io.emit("updateRoom", updatedRoom);
+            io.emit("updateRoom", senitizedRoom);
         }
 
-        res.status(200).json(updatedRoom);
+        res.status(200).json(senitizedRoom);
     } catch (error) {
         console.log("Error in leaveRoom: ", error.message);
         res.status(500).json({ error: "Internal server error" });
@@ -199,11 +238,23 @@ export const deleteRoom = async (req,res) => {
         }
 
         //SOCKET IO
-        io.emit("deleteRoom", room)
+        io.emit("deleteRoom", senetizeRoom(room))
 
-        res.status(200).json(room)
+        res.status(200).json(senetizeRoom(room))
     }catch (error) {
         console.log("Error in deleteRoom: ", error.message);
         res.status(500).json({error:"Internal server error"});
+    }
+}
+
+const senetizeRoom = (room) => {
+    return {
+        _id: room._id,
+        name: room.name,
+        owner: room.owner,
+        chat: room.chat,
+        users: room.users,
+        gameId: room.gameId,
+        hasPassword: room.hasPassword // Only send hasPassword to the frontend
     }
 }

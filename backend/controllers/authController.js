@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs"
 import generateTokenAndSetCookie from "../utils/generateToken.js";
 import { io } from "../socket/socket.js"
 import Game from "../models/game/gameModel.js";
+import { leaveCurrentGame } from "./gameController.js";
 
 export const signup = async (req, res) => {
     try{
@@ -79,11 +80,21 @@ export const logout = async (req, res) => {
             return res.status(400).json({error:"User not found"})
         }
         
-        await Room.findOneAndUpdate(
-            {_id: current.roomId},
-            { $pull: { users: user._id }}, 
-            { new: true }
-        )
+        const room = await Room.findById(user.roomId).populate("users")
+        if(room){
+            if (room.gameId) {
+                await leaveCurrentGame(user._id);
+            }
+            room.users = room.users.filter((usr) => usr._id.toString() !== user._id.toString())
+            if(room.users.length === 0){
+                await Room.findByIdAndDelete(room._id);
+                io.emit("deleteRoom", room);
+            }
+            else{
+                await room.save()
+                io.emit("updateRoom", room)
+            }
+        }
         await User.findOneAndUpdate(
             { _id: user._id},
             { roomId : null, status: "offline"},
