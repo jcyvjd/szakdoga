@@ -38,7 +38,7 @@ const Session = () => {
   const [playerReady, setPlayerReady] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [finalPlayedBoards, setFinalPlayedBoards] = useState([]);
-  const [ isPanelOpen, setIsPanelOpen ] = useState(false);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
   //const [room, setRoom] = useState();
 
   //setRoom(rooms.find(room => room._id === roomId) || null);
@@ -179,7 +179,9 @@ const Session = () => {
         {/* Left side panel */}
         <div
           className={`w-full lg:w-1/3 lg:h-full lg:fixed lg:top-0 lg:left-0 lg:bottom-0 lg:z-10 p-4 space-y-2
-            ${isPanelOpen ? 'slide-in' : 'slide-out'} lg:!translate-x-0 lg:!opacity-100 lg:!slide-in`}
+            ${
+              isPanelOpen ? "slide-in block" : "slide-out hidden"
+            } lg:!translate-x-0 lg:!opacity-100 lg:block lg:!slide-in`}
         >
           {/* Buttons Div */}
           <div className="flex flex-grow justify-between">
@@ -193,7 +195,9 @@ const Session = () => {
               <button
                 onClick={handleToggleReady}
                 className={`inline-flex flex-1 items-center justify-center py-2 px-4 rounded-md ${
-                  playerReady ? "bg-success text-success-content" : "bg-base-200 text-base-content"
+                  playerReady
+                    ? "bg-success text-success-content"
+                    : "bg-base-200 text-base-content"
                 }`}
               >
                 {playerReady ? "Ready" : "Not Ready"}
@@ -205,7 +209,11 @@ const Session = () => {
           </div>
         </div>
         {/* Right side content */}
-        <div className={`w-full lg:w-2/3 lg:ml-auto lg:relative flex flex-col overflow-auto items-center justify-center transition-opacity duration-300 ease-in-out ${!isPanelOpen ? 'flex' : 'hidden'} lg:!flex`}>
+        <div
+          className={`w-full lg:w-2/3 lg:ml-auto lg:relative flex flex-col overflow-auto items-center justify-center transition-opacity duration-300 ease-in-out ${
+            !isPanelOpen ? "flex" : "hidden"
+          } lg:!flex`}
+        >
           {/* Status Board */}
           {!gameState && !gameOver && room && room.users.length > 0 && (
             <div className="flex-grow flex justify-center items-center">
@@ -224,10 +232,10 @@ const Session = () => {
           )}
           {/* Game Board */}
           {gameState && !gameOver && (
-            <div className="grid grid-cols-2 gap-2 flex-grow overflow-y-auto no-scrollbar items-center">
+            <div className="flex flex-wrap justify-around text-center w-full overflow-y-auto no-scrollbar items-center">
               {/* Conditionally render first row */}
               {gameState.playerBoards[2] && (
-                <div className="row-start-1 col-start-1">
+                <div className="m-5 inline-block">
                   <PlayerBoardCard
                     playerBoard={gameState.playerBoards[2]}
                     onCollectedTilesClick={handleRowClick}
@@ -235,7 +243,7 @@ const Session = () => {
                 </div>
               )}
               {gameState.playerBoards[3] && (
-                <div className="row-start-1 col-start-2">
+                <div className="m-5 inline-block">
                   <PlayerBoardCard
                     playerBoard={gameState.playerBoards[3]}
                     onCollectedTilesClick={handleRowClick}
@@ -243,32 +251,34 @@ const Session = () => {
                 </div>
               )}
               {/* Second row */}
-              <div className="row-start-2 col-span-2 flex justify-center items-center">
-                <div className="flex flex-wrap justify-around w-full">
-                  {gameState.markets.map((market, index) => (
-                    <div className="m-1" key={index}>
-                      <Market
-                        marketId={index}
-                        tiles={market}
-                        onTileClick={handleTileClick}
-                        selectedTile={selectedTile}
-                        selectedMarket={selectedMarket}
-                      />
-                    </div>
-                  ))}
-                  <div className="flex-grow m-1">
-                      <SharedMarket
-                        tiles={gameState.sharedMarket}
-                        onTileClick={(tile) => handleTileClick(tile, -1)}
-                        selectedTile={selectedTile}
-                        selectedMarket={selectedMarket}
-                      />
+              <div className="block">
+                <div className="flex flex-wrap justify-around text-center w-full">
+                  <div className="flex flex-wrap pt-5 justify-around text-center w-full">
+                    {gameState.markets.map((market, index) => (
+                      <div className="inline-block m-1" key={index}>
+                        <Market
+                          marketId={index}
+                          tiles={market}
+                          onTileClick={handleTileClick}
+                          selectedTile={selectedTile}
+                          selectedMarket={selectedMarket}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="block m-1">
+                    <SharedMarket
+                      tiles={gameState.sharedMarket}
+                      onTileClick={(tile) => handleTileClick(tile, -1)}
+                      selectedTile={selectedTile}
+                      selectedMarket={selectedMarket}
+                    />
                   </div>
                 </div>
               </div>
               {/* Conditionally render third row */}
               {gameState.playerBoards[1] && (
-                <div className="row-start-3 col-start-1">
+                <div className="m-5 inline-block">
                   <PlayerBoardCard
                     playerBoard={gameState.playerBoards[1]}
                     onCollectedTilesClick={handleRowClick}
@@ -276,7 +286,7 @@ const Session = () => {
                 </div>
               )}
               {gameState.playerBoards[0] && (
-                <div className="row-start-3 col-start-2">
+                <div className="m-5 inline-block">
                   <PlayerBoardCard
                     playerBoard={gameState.playerBoards[0]}
                     onCollectedTilesClick={handleRowClick}
