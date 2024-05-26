@@ -16,7 +16,7 @@ const Navbar = () => {
       <nav className="bg-base-200 text-base-content flex justify-between  w-full">
         <div className="flex items-center">
           <img src={logo} alt="Azul_Logo" className="relative -left-10 h-20" />
-          <button className="ml-4 mr-4" onClick={() => setShowHelpPanel(true)}>
+          <button type="button" className="ml-4 mr-4" onClick={() => setShowHelpPanel(true)}>
             <FiHelpCircle size={24} />
           </button>
         </div>
