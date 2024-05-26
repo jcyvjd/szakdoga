@@ -59,8 +59,13 @@ const PlayerBoardCard = ({ playerBoard, onCollectedTilesClick }) => {
     borderColor = isPlayerTurn ? 'border-red-500' : '';
   }
 
+  const playerInGame = gameState && gameState.players.find(player => player === playerBoard.playerId._id);
+
   return (
-    <div id={_id} className={`bg-white rounded-lg shadow-md p-4 w-80 flex flex-col ${borderColor} border-2`}>
+    <div 
+    id={`playerBoard-${_id}`}
+      className={`bg-white rounded-lg shadow-md p-4 w-80 flex flex-col ${borderColor} border-2 ${!playerInGame && 'desaturate'}`}
+    >
       {/* Top section: Points and Player ID */}
       <div className="flex justify-between mb-2">
         <div>

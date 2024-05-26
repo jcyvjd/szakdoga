@@ -7,7 +7,7 @@ import { leaveCurrentGame, deleteGame } from "./gameController.js"
 
 export const getRooms = async (req, res) => {
     try {
-        const allRooms = await Room.find().populate("users").sort({ createdAt: -1 });
+        const allRooms = await Room.find().populate({ path: "users", select: '-password' }).sort({ createdAt: -1 });
 
         res.status(200).json(allRooms)
 
@@ -26,7 +26,7 @@ export const getRoom = async (req,res) => {
             return res.status(404).json({error: 'No such room'})
         }
 
-        const room = await Room.findById(id).populate("users")
+        const room = await Room.findById(id).populate({ path: "users", select: '-password' })
 
         if (!room) {
             return res.status(404).json({error: 'No such room'})
@@ -53,7 +53,7 @@ export const createRoom = async (req, res) => {
             users: [],
             gameId: null
         })
-        room.populate("users");
+        room.populate({ path: "users", select: '-password' });
         //SOCKET IO
         io.emit("newRoom", room);
 
@@ -97,7 +97,7 @@ export const joinRoom = async (req,res) => {
             { _id: roomId },
             { $addToSet: { users: loggedInUserId } }, // $addToSet adds to array if not already present
             { new: true } // to return the updated room document
-        ).populate("users")
+        ).populate({ path: "users", select: '-password' })
         if(!room){
             return res.status(400).json({error:"No room found with such id"})
         }
@@ -111,50 +111,66 @@ export const joinRoom = async (req,res) => {
     }
 }
 
-export const leaveRoom = async (req,res) => {
+export const leaveRoom = async (req, res) => {
     try {
-        console.log("leaving room")
-        const loggedInUserId = req.user._id
-        const roomId = req.params.id
+        console.log("Leaving room");
+        const loggedInUserId = req.user._id;
+        const roomId = req.params.id;
 
-        const usr = await User.findOneAndUpdate(
-            { _id: loggedInUserId },
-            { roomId: null, status: 'online' }, 
-            { new: true }
-        )
-        if(!usr){
-            return res.status(400).json({error:"No user found with such id"})
+        // Fetch the room details first
+        const room = await Room.findById(roomId).populate({ path: "users", select: '-password' });
+
+        if (!room) {
+            return res.status(400).json({ error: "No room found with such id" });
         }
 
-        const room = await Room.findOneAndUpdate(
-            { _id: roomId },
-            { $pull: { users: loggedInUserId }}, 
-            { new: true } // to return the updated room document
-        )
-
-        if(!room){
-            return res.status(400).json({error:"No room found with such id"})
-        }
-        if(room.gameId){
+        // Leave the game if it exists
+        if (room.gameId) {
+            console.log("Leaving game");
             await leaveCurrentGame(loggedInUserId);
         }
-        room.populate("users");
 
-        if(room.users.length === 0){
-            await Room.findByIdAndDelete(roomId);
-            io.emit("deleteRoom", room);
-            await deleteGame(room.gameId);
+        // Update the room by removing the user
+        const updatedRoom = await Room.findByIdAndUpdate(
+            roomId,
+            { $pull: { users: loggedInUserId } },
+            { new: true } // to return the updated room document
+        );
+
+        if (!updatedRoom) {
+            return res.status(400).json({ error: "Failed to update room" });
         }
-        //SOCKET IO
-        io.emit("updateRoom", room)
 
-        res.status(200).json(room)
-        //console.log("leaveRoom: ", room)
+        // Update the user status and roomId
+        const usr = await User.findByIdAndUpdate(
+            loggedInUserId,
+            { roomId: null, status: 'online' },
+            { new: true }
+        );
+
+        if (!usr) {
+            return res.status(400).json({ error: "No user found with such id" });
+        }
+
+        // If the room is empty, delete it and its associated game
+        updatedRoom.populate({ path: "users", select: '-password' });
+        if (updatedRoom.users.length === 0) {
+            await Room.findByIdAndDelete(roomId);
+            io.emit("deleteRoom", updatedRoom);
+
+            if (updatedRoom.gameId) {
+                await deleteGame(updatedRoom.gameId);
+            }
+        } else {
+            io.emit("updateRoom", updatedRoom);
+        }
+
+        res.status(200).json(updatedRoom);
     } catch (error) {
         console.log("Error in leaveRoom: ", error.message);
-        res.status(500).json({error:"Internal server error"});
+        res.status(500).json({ error: "Internal server error" });
     }
-}
+};
 
 const clearUsers = async (roomId) => {
     await User.updateMany(
@@ -166,7 +182,7 @@ const clearUsers = async (roomId) => {
 export const deleteRoom = async (req,res) => {
     try {
         const roomId = req.params.id
-        const room = await Room.findById(roomId).populate("users")
+        const room = await Room.findById(roomId).populate({ path: "users", select: '-password' })
         if(!room){
             return res.status(400).json({error:"No room found with such id"})
         }

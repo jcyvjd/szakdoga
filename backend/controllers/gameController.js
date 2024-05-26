@@ -624,11 +624,12 @@ export const getGame = async (req, res) => {
         console.log("roomId: ", roomId);
         const game = await Game.findOne({ roomId: roomId }).populate('playerBoards');
 
+        console.log("getGame game: ", game)
         if (!game) {
             console.log("No such game")
             const receiverSocketId = getReceiverSocketId(req.user._id);
             io.to(receiverSocketId).emit("GetGame", null );
-            io.to(receiverSocketId).emit("UpdateGame", null );
+            //io.to(receiverSocketId).emit("UpdateGame", null );
             
             return //res.status(404).json({ error: "No such game" });
         }
@@ -659,7 +660,7 @@ export const getGame = async (req, res) => {
             io.to(receiverSocketId).emit("GetGame", payload );
             //io.to(receiverSocketId).emit("UpdateGame", payload );
         }
-
+        console.log("getGame end")
         res.status(200).json(game);
     } catch (error) {
         console.log("Error in getGame: ", error.message);
@@ -669,8 +670,14 @@ export const getGame = async (req, res) => {
 
 export const leaveCurrentGame = async (userId) => {
     try {
+        console.log("leaveCurrentGame userId: ", userId)    
+        const user = await User.findById(userId);
+        if (!user || !user.roomId) {
+            return console.log("User not found or not in a room");
+        };
+
         //find game user is in
-        const game = await Game.findOne({ players: userId }).populate('playerBoards');
+        const game = await Game.findOne({ roomId: user.roomId }).populate('playerBoards');
         if(!game){
             console.log("No game found for user");
             return;
@@ -679,11 +686,12 @@ export const leaveCurrentGame = async (userId) => {
         const playerBoard = await PlayerBoard.findOneAndDelete({ playerId: userId });
         if(!playerBoard){ return; }
 
-        const index = game.playerBoards.findIndex(board => board.playerId.toString() === userId.toString());
-        if (index > -1) {
-            console.log("playerBoard deleted");
-            game.playerBoards.splice(index, 1);
-        }
+        // megjelentites miatt benne marad a playerBoard, eleg cak a playersbol kivenni
+        // const index = game.playerBoards.findIndex(board => board.playerId.toString() === userId.toString());
+        // if (index > -1) {
+        //     console.log("playerBoard deleted");
+        //     game.playerBoards.splice(index, 1);
+        // }
 
         //remove player from game, also change playerToMove if needed
         if(game.playerToMove.toString() === userId.toString()){
@@ -701,21 +709,22 @@ export const leaveCurrentGame = async (userId) => {
               model: 'User' 
             }
           });
-          const payload = {
-            _id: populatedGame._id,
-            gameStatus: populatedGame.gameStatus,
-            markets: populatedGame.markets,
-            sharedMarket: populatedGame.sharedMarket,
-            playerBoards: populatedGame.playerBoards,
-            playerToMove: populatedGame.playerToMove,
-            players: populatedGame.players,
-            roomId: populatedGame.roomId
-        };
 
+          const payload = {
+            _id: game._id,
+            gameStatus: game.gameStatus,
+            markets: game.markets,
+            sharedMarket: game.sharedMarket,
+            playerBoards: game.playerBoards,
+            playerToMove: game.playerToMove,
+            players: game.players,
+            roomId: game.roomId
+        };
+        console.log("payload players:", payload.players)
         if(game.players.length > 1){
             for (const _userId of game.players) {
                 const receiverSocketId = getReceiverSocketId(_userId);
-                io.to(receiverSocketId).emit("UpdateGame",  payload );
+                io.to(receiverSocketId).emit("PlayerLeftGame",  payload );
             }
         }
         else{
@@ -747,6 +756,10 @@ export const deleteGame = async (gameId) => {
                 user.roomId = null;
                 user.save();
             });
+        });
+
+        game.forEach(playerBoard => {
+            PlayerBoard.findByIdAndDelete(playerBoard._id);
         });
 
         await Game.findOneAndDelete({ _id: gameId });

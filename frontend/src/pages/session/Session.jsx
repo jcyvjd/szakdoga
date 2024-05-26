@@ -61,6 +61,7 @@ const Session = () => {
       return;
     }
     console.log("SETUP");
+    console.log("SETUP authUser: ", authUser);
     if (room && room.users[0]._id === authUser._id) {
       await setupGame();
       console.log("SETUP UTAN");
@@ -129,6 +130,7 @@ const Session = () => {
   useEffect(() => {
     getRooms();
     getGame(authUser.roomId);
+    console.log("getGame: ", authUser.roomId);
     setIsPanelOpen(false);
   }, []);
 

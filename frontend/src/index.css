@@ -52,3 +52,18 @@
 .slide-out {
   animation: slideOut 0.3s forwards;
 }
+
+@keyframes desaturate {
+  from {
+    filter: saturate(100%);
+  }
+  to {
+    filter: saturate(0%);
+  }
+}
+
+.desaturate {
+  animation: desaturate 0.5s forwards;
+  pointer-events: none;
+  opacity: 0.5;
+}

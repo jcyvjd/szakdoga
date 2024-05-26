@@ -1,14 +1,5 @@
 import { useState, useEffect } from "react";
 
-//const [animationQueue, setAnimationQueue] = useState([]);
-
-// useEffect(() => {
-//     if (animationQueue.length > 0) {
-//         const { fromElementId, toElementId } = animationQueue[0];
-//         handleTileMove({ fromElementId, toElementId });
-//         setAnimationQueue(animationQueue.slice(1));
-//     }
-// }, [animationQueue]);
 const WallTilePattern = [
     ['blue', 'yellow', 'red', 'black', 'azure'],
     ['azure', 'blue', 'yellow', 'red', 'black'],
@@ -58,11 +49,6 @@ export const animateTakeTiles = (previousState, currentState) => {
                         const fromElementId = `market-${marketId}-tile-${prevMarket.indexOf(currentPlayerBoard.collectedTiles[row][tileInd])}`;
                         const toElementId = `playerBoard-${prevPlayerBoard._id}-col-${row}-tile-${tileInd}`;
                         
-                        //setAnimationQueue([...animationQueue, { fromElementId, toElementId }]);
-
-                        // if(animationQueue.length === 0){
-                        //     handleTileMove({ fromElementId, toElementId });
-                        // }
                         animations.push({ fromElementId, toElementId });
 
                         prevMarket[prevMarket.indexOf(currentPlayerBoard.collectedTiles[row][tileInd])] = 'empty';
@@ -90,7 +76,6 @@ export const animateTakeTiles = (previousState, currentState) => {
                         const toElementId = `market-${-1}-tile-${middleIndex}`;
                         //const toElementId = `market-${-1}-tile-${lastSharedIndexPlusOne}`;
                         
-                        //setAnimationQueue([...animationQueue, { fromElementId, toElementId }]);
                         animations.push({ fromElementId, toElementId });
                         prevMarket[tileInd] = 'empty';
                     }
@@ -211,6 +196,35 @@ const handleTileMove = (data) => {
                 //setAnimationQueue(animationQueue.slice(1));
             };
         }
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+
+export const animatePlayerLeft = (previousState, currentState) => {
+    try {
+        if (!previousState || !currentState) return null;
+        console.log("AnimatePlayerLeft", previousState, currentState);
+
+        // Find the player who left
+        const leftPlayer = previousState.players.find(player => !currentState.players.includes(player));
+        if(!leftPlayer || leftPlayer === 'undefined') return null;
+        console.log("LeftPlayerID", leftPlayer);
+        // Find the player board of the left player
+        const leftPlayerBoard = previousState.playerBoards.find(playerBoard => playerBoard.playerId._id === leftPlayer);
+        if(!leftPlayerBoard || leftPlayerBoard === 'undefined') return null;
+        console.log("LeftPlayerBoard", leftPlayerBoard);
+        
+         // Apply styling to indicate the inactive player
+         const leftPlayerBoardId = `playerBoard-${leftPlayerBoard._id}`;
+         const leftPlayerBoardElement = document.getElementById(leftPlayerBoardId);
+         console.log("LeftPlayerBoardElement", leftPlayerBoardElement);
+        
+         if (leftPlayerBoardElement) {
+             leftPlayerBoardElement.classList.add('desaturate');
+         }
+        console.log("AFTER LEFT PLAYER");
     } catch (error) {
         console.error(error);
     }

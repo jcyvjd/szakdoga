@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { useSocketContext } from "../context/SocketContext";
 import { useGameContext } from "../context/GameContext";
 import { useAuthContext } from "../context/AuthContext";
-import { animateRoundOver, animateTakeTiles} from "../utils/AnimateChanges";
+import { animateRoundOver, animateTakeTiles, animatePlayerLeft} from "../utils/AnimateChanges";
 import toast from "react-hot-toast";
-import { set } from "mongoose";
 
 const useListenGame = () => {
     const { authUser } = useAuthContext();
@@ -47,8 +46,14 @@ const useListenGame = () => {
                     break;
                 case "GetGame":
                     setGameState(data);
+                    console.log("GetGame: ", data);
                     break;
                 case "UpdateGame":
+                    setGameState(data);
+                    break;
+                case "PlayerLeftGame":
+                    console.log("Player left the game: ", data);
+                    animatePlayerLeft(gameState, data);
                     setGameState(data);
                     break;
                 default:
@@ -76,6 +81,7 @@ const useListenGame = () => {
         socket?.on("GameOver", (game) => handleEvent("GameOver", game));
         socket?.on("RoundOver", (game) => handleEvent("RoundOver", game));
         socket?.on("TakeTiles", (data) => handleEvent("TakeTiles", data));
+        socket?.on("PlayerLeftGame", (data) => {handleEvent("PlayerLeftGame", data)});
 
         return () => {
             socket?.off("NewGame");
@@ -85,6 +91,7 @@ const useListenGame = () => {
             socket?.off("TakeTiles");
             socket?.off("RoundOver");
             socket?.off("NewRound");
+            socket?.off("PlayerLeftGame");
         };
     }, [socket, gameState, setGameState]);
 
