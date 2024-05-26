@@ -193,7 +193,6 @@ const startNewRound = async (game) => {
             const receiverSocketId = getReceiverSocketId(userId);
             io.to(receiverSocketId).emit("NewRound", payload );
         }
-        io.emit("NewRound", payload );
         console.log("NewRound end Players: ", game.players)
     } catch (error) {
         console.log("Error in startNewRound: ", error.message);
