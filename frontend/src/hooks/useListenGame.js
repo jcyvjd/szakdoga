@@ -20,7 +20,11 @@ const useListenGame = () => {
                 case "NewRound":
                     console.log("NewRound recieved: ")
                     animateNewRound(gameState, data);
-                    setGameState(data);
+                    setGameState(prevState => ({
+                        ...prevState,
+                        markets: data.markets,
+                        sharedMarket: data.sharedMarket,
+                    }));
                 case "GameOver":
                     setGameState(data);
                     break;
@@ -96,7 +100,19 @@ const useListenGame = () => {
         };
     }, [socket, gameState, setGameState]);
 
-    return null;
+    const setupGame = async (roomId) => {
+        socket.emit("SetupGame", { roomId });
+    }
+
+      const takeTiles = async (tile, marketId, row) => {
+        socket.emit("TakeTiles", { tile, marketId, row });
+      };
+
+      const getGame = async (roomId) => {
+        socket.emit("GetGame", { roomId });
+      };
+
+    return {setupGame, takeTiles, getGame}
 }
 
 export default useListenGame;

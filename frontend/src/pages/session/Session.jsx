@@ -6,7 +6,6 @@ import { useSocketContext } from "../../context/SocketContext";
 import useJoinRoom from "../../hooks/useJoinRoom";
 import Chatbox from "../../components/messages/Chatbox";
 import { FiLogOut } from "react-icons/fi";
-import useGame from "../../hooks/useGame";
 import useListenGame from "../../hooks/useListenGame";
 import PlayerBoardCard from "../../components/game/PlayerBoard";
 import Market from "../../components/game/Market";
@@ -25,7 +24,7 @@ const Session = () => {
   const { rooms, setRooms } = useRoomContext();
   const { leaveRoom, getRooms, loading } = useJoinRoom();
   const { gameState, setGameState } = useGameContext();
-  const { setupGame, getGame, takeTiles } = useGame();
+  const { setupGame, getGame, takeTiles } = useListenGame();
   const { socket, setSocket } = useSocketContext();
   useListenGame();
   useListenRooms();

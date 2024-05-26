@@ -17,6 +17,7 @@ const WallTilePattern = [
 
 export const animateTakeTiles = (previousState, currentState) => {
     if (!previousState || !currentState) return null;
+    if(JSON.stringify(previousState) === JSON.stringify(currentState)) return null;
     //if (!validateGameState(previousState) || !validateGameState(currentState)) return null;
     console.log("AnimateTakeTiles", previousState, currentState);
     try {
@@ -42,10 +43,9 @@ export const animateTakeTiles = (previousState, currentState) => {
         }
         //ha prevMarket null, akkor nem takeTile tortent (talan korVege)
         //eloszor ha nem null akkor meganimaljuk a takeTile-t
-        if(prevMarket !== null){
+        else//(prevMarket !== null){
+        {
             //market to playerBoard.collectedTiles
-            console.log("PlayerId", playerId);
-
             const prevPlayerBoard = previousState.playerBoards.find(playerBoard => playerBoard.playerId._id === playerId);
             console.log("prevPlayerBoard", prevPlayerBoard);
             const currentPlayerBoard = currentState.playerBoards.find(playerBoard => playerBoard.playerId._id === playerId);
@@ -128,7 +128,7 @@ export const animateRoundOver = (previousState, currentState) => {
                     console.log("ROUNDOVER wallIndex", wallIndex);
                     if (lastElement !== undefined && lastElementIndex !== -1) {
                         const fromElementId = `playerBoard-${prevPlayerBoard._id}-col-${row}-tile-${lastElementIndex}`;
-                        const toElementId = `playerBoard-${prevPlayerBoard._id}-wall-${row}-tile${wallIndex}`;
+                        const toElementId = `playerBoard-${prevPlayerBoard._id}-wall-${row}-tile-${wallIndex}`;
 
                         animations.push({ fromElementId, toElementId });
 
@@ -239,6 +239,8 @@ const handleTileMove = (data) => {
     try {
         console.log("MoveTile", data);
         const { fromElementId, toElementId } = data;
+        console.log("fromElementId", fromElementId);
+        console.log("toElementId", toElementId);
 
         console.log("Still MOVING")
 

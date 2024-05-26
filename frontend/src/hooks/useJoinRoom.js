@@ -14,12 +14,14 @@ const useJoinRoom = () => {
     const {setGameState} = useGameContext();
     const navigate = useNavigate();
 
-    const joinRoom = async (room) => {
+    const joinRoom = async (room, password) => {
+        console.log("joinRoom: ", room.name, password)
         setLoading(true);
         try {
             const response = await fetch("/api/rooms/join/" + room._id, {
                 method:"POST",
                 headers: {"Content-Type" : "application/json"},
+                body: JSON.stringify({roomId: room._id, password})
             })
             const data = await response.json()
             if(response.ok){
