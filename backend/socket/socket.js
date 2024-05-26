@@ -3,6 +3,8 @@ import http from 'http';
 import express from 'express';
 
 import { sendMessage, getMessages } from '../controllers/messageController.js';
+import { messageHandler } from './socketHandlers/messageHandler.js';
+import { gameHandler } from './socketHandlers/gameHandler.js';
 
 const app = express();
 
@@ -29,9 +31,10 @@ io.on('connection', (socket) => {
     }
 
 
-    socket.on("sendMessage", (data) => {sendMessage(socket, data)});
-    socket.on("getMessages", (data) => {getMessages(socket, data)});
-
+    // socket.on("sendMessage", (data) => {sendMessage(socket, data)});
+    // socket.on("getMessages", (data) => {getMessages(socket, data)});
+    messageHandler(socket);
+    gameHandler(socket);
 
     socket.on('disconnect', () => {
         delete userSocketMap[userId];

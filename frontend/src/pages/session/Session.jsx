@@ -25,7 +25,7 @@ const Session = () => {
   const { rooms, setRooms } = useRoomContext();
   const { leaveRoom, getRooms, loading } = useJoinRoom();
   const { gameState, setGameState } = useGameContext();
-  const { setupGame, startGame, getGame, takeTiles } = useGame();
+  const { setupGame, getGame, takeTiles } = useGame();
   const { socket, setSocket } = useSocketContext();
   useListenGame();
   useListenRooms();
@@ -63,7 +63,7 @@ const Session = () => {
     console.log("SETUP");
     console.log("SETUP authUser: ", authUser);
     if (room && room.users[0]._id === authUser._id) {
-      await setupGame();
+      await setupGame(room._id);
       console.log("SETUP UTAN");
     }
     setPlayerReady(false);

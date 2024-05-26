@@ -4,55 +4,6 @@ import Room from '../models/roomModel.js';
 import { getReceiverSocketId, io } from '../socket/socket.js';
 import User from '../models/userModel.js';
 
-// export const sendMessage = async (req, res) => {
-//     try {
-//         const { message } = req.body;
-//         const { id: roomId } = req.params;
-//         const senderId = req.user._id;
-//         const username = req.user.username;
-
-//         let chat = await Chat.findOne({
-//             roomId: roomId,
-//         });
-
-//         if (!chat) {
-//             chat = await Chat.create({
-//                 roomId: roomId,
-
-//             });
-//         }
-
-//         const newMessage = new Message({
-//             senderName: username,
-//             senderId: senderId,
-//             recieverId: roomId,
-//             message: message,
-//         });
-
-//         if(newMessage){
-//             chat.messages.push(newMessage._id);
-//         }
-//         await Promise.all([newMessage.save(), chat.save()]);
-
-//         //socket
-//         const room = await Room.findOne({ _id: roomId });
-
-//         room.users.forEach((user) => {
-//             const receiverSocketId = getReceiverSocketId(user);
-//             if (receiverSocketId) {
-//                 console.log("receiverSocketId", receiverSocketId);
-//                 io.to(receiverSocketId).emit("newMessage", newMessage);
-//             }
-//         }); 
-
-
-//         res.status(201).json(newMessage);
-//     } catch (error) {
-//         console.log("Error in sendMessage controller", error.message);
-//         res.status(500).json({ error: "Internal server error" });
-//     }
-// };
-
 export const sendMessage = async ( io, data) => {
     try {
         const userId = io.handshake.query.userId;

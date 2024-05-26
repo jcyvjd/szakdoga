@@ -54,16 +54,17 @@ const loadMarkets = async (game) => {
 }
 
 //creating a game 
-export const setupGame = async (req, res) => {
+export const setupGame = async (io, data) => {
     // if (!req.user.roomId) { //kozos ready-zes utan indul csak
     //     return res.status(400).json({ error: "User is not in a room" });
     // }
     console.log("setupGame")
-    console.log("req.userID: ", req.user._id)
+    const {roomId} = data;
+    console.log("setup roomId: ", roomId)
     try {
-        const room = await Room.findOne({ _id: req.user.roomId });
+        const room = await Room.findOne({ _id: roomId});
         if (!room) {
-            return res.status(404).json({ error: "No such room" });
+            return console.log("No such room");
         }
         // if(room.owner.toString() !== req.user._id.toString()){
         //     return res.status(400).json({error: "Only the owner can start the game"});
@@ -94,6 +95,7 @@ export const setupGame = async (req, res) => {
                 const receiverSocketId = getReceiverSocketId(userId);
                 io.to(receiverSocketId).emit("NewGame",  payload );
             }
+            io.emit("NewGame",  payload );
             return console.log("Game already exists");
         }
 
@@ -140,34 +142,14 @@ export const setupGame = async (req, res) => {
             const receiverSocketId = getReceiverSocketId(userId);
             io.to(receiverSocketId).emit("NewGame",  payload );
         }
+        io.emit("NewGame",  payload );
 
-        res.status(200).json(newGame);
         startNewRound(newGame);
     } catch (error) {
         console.log("Error in setupGame: ", error.message);
-        res.status(500).json({ error: "Internal server error" });
     }
 };
 
-export const startGame = async (req, res) => {
-    // try {
-    //     const game = await Game.findOne({ roomId: req.user.roomId });
-    //     console.log("game: ", game._id);
-    //     if (!game) {
-    //         return res.status(404).json({ error: "No such game" });
-    //     }
-
-    //     game.gameStatus = 'playing';
-    //     await startNewRound(game);
-    //     console.log("startNewRound done")
-    //     await game.save();
-
-    //     return res.status(200).json({ message: "Game started successfully" });
-    // } catch (error) {
-    //     console.log("Error in startGame: ", error.message);
-    //     res.status(500).json({ error: "Internal server error" });
-    // }
-};
 
 const startNewRound = async (game) => {
     try {
@@ -211,6 +193,7 @@ const startNewRound = async (game) => {
             const receiverSocketId = getReceiverSocketId(userId);
             io.to(receiverSocketId).emit("NewRound", payload );
         }
+        io.emit("NewRound", payload );
         console.log("NewRound end Players: ", game.players)
     } catch (error) {
         console.log("Error in startNewRound: ", error.message);
@@ -488,28 +471,33 @@ const isValideMove = (playerBoard, color, rowInd) => {
     return true;
 }
 
-export const takeTiles = async (req, res) => {
+export const takeTiles = async (io, data) => {
     try {
-        const game = await Game.findOne({ roomId: req.user.roomId }).populate('playerBoards');
+        const user = await User.findById( {_id: io.handshake.query.userId});
+        if (!user || !user.roomId) {
+            return console.log("No such user or user is not in a room");
+        }
+
+        const game = await Game.findOne({ roomId: user.roomId }).populate('playerBoards');
         if (!game) {
-            return res.status(404).json({ error: "No such game" });
+            return console.log("No such game");
         }
 
-        const playerBoard = game.playerBoards.find(board => board.playerId.toString() === req.user._id.toString());
+        const playerBoard = game.playerBoards.find(board => board.playerId.toString() === user._id.toString());
         if (!playerBoard) {
-            return res.status(404).json({ error: "PlayerBoard not found" });
+            return console.log("No playerBoard found for user");
         }
 
-        const { tile: color, marketId: source, row } = req.body;
+        const { tile: color, marketId: source, row } = data;
 
         // Check if it's the player's turn
-        if (!game.playerToMove.equals(req.user._id)) {
-            return res.status(400).json({ error: "Not your turn" });
+        if (!game.playerToMove.equals(user._id)) {
+            return console.log("Not the player's turn");
         }
 
         // Check if the move is valid
         if (!isValideMove(playerBoard, color, row)) {
-            return res.status(400).json({ error: "Invalid move" });
+            return console.log("Invalid move");
         }
 
         let marketCopy = [];
@@ -579,7 +567,7 @@ export const takeTiles = async (req, res) => {
                 }
             }
         }
-        game.playerToMove = game.players[(game.players.indexOf(req.user.id) + 1) % game.players.length];
+        game.playerToMove = game.players[(game.players.indexOf(user.id) + 1) % game.players.length];
         
         await game.save();
         await playerBoard.save();
@@ -607,41 +595,42 @@ export const takeTiles = async (req, res) => {
             const receiverSocketId = getReceiverSocketId(userId);
             io.to(receiverSocketId).emit("TakeTiles", payload);
         }
+        io.emit("TakeTiles", payload);
 
         if(isRoundOver(game)){
             await onRoundOver(game);
         }
 
-        res.status(200).json({ message: "Tiles taken successfully" });
+        console.log("TakeTiles success")
 
     } catch (error) {
         console.log("Error in takeTiles: ", error.message);
-        res.status(500).json({ error: "Internal server error" });
+       
     }
 }
 
 
 //Send back the game
-export const getGame = async (req, res) => {
+export const getGame = async (socket, data) => {
     try {
         console.log("getGame")
-        const roomId = req.params.id;
-        console.log("roomId: ", req.params);
+        const user = await User.findById( {_id: socket.handshake.query.userId});
+        const {roomId} = data;
+        if (!user || !roomId || user.roomId !== roomId) {
+            return console.log("No such user or user is not in a room");
+        }
+
         console.log("roomId: ", roomId);
         const game = await Game.findOne({ roomId: roomId }).populate('playerBoards');
 
         if (!game) {
             console.log("No such game")
-            const receiverSocketId = getReceiverSocketId(req.user._id);
-            io.to(receiverSocketId).emit("GetGame", null );
+            io.emit("GetGame", null );
             //io.to(receiverSocketId).emit("UpdateGame", null );
             
             return //res.status(404).json({ error: "No such game" });
         }
         if(game.roomId.toString() !== roomId){
-            console.log("RoomId mismatch")
-            console.log("game.roomId: ", game.roomId)
-            console.log("roomId: ", roomId)
             return //ha veletlen a user benne maradt volna egy jatekba
         }
 
@@ -666,14 +655,13 @@ export const getGame = async (req, res) => {
         };
         for (const userId of game.players) {
             const receiverSocketId = getReceiverSocketId(userId);
-            io.to(receiverSocketId).emit("GetGame", payload );
+            socket.to(receiverSocketId).emit("GetGame", payload );
             //io.to(receiverSocketId).emit("UpdateGame", payload );
         }
+        io.emit("GetGame", payload );
         console.log("getGame end")
-        res.status(200).json(game);
     } catch (error) {
         console.log("Error in getGame: ", error.message);
-        res.status(500).json({ error: "Internal server error" });
     }
 };
 
@@ -736,6 +724,7 @@ export const leaveCurrentGame = async (userId) => {
                 const receiverSocketId = getReceiverSocketId(_userId);
                 io.to(receiverSocketId).emit("PlayerLeftGame",  payload );
             }
+            io.emit("PlayerLeftGame",  payload );
         }
         else{
             console.log("Game is over, 1 player left");
@@ -745,6 +734,7 @@ export const leaveCurrentGame = async (userId) => {
                 io.to(receiverSocketId).emit("GameOver",  payload );
                 console.log("GameOverSent", _userId)
             }
+            io.emit("GameOver",  payload );
         }
     }
     catch (error) {
