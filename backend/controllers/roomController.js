@@ -231,11 +231,9 @@ export const deleteRoom = async (req,res) => {
         }
         await clearUsers(roomId)
 
-        if(!room.owner.equals(req.user._id)){
-            return res.status(403).json({error:"You are not the owner of this room"})
-        }else{
-            await Room.findByIdAndDelete(roomId)
-        }
+        
+        await Room.findByIdAndDelete(roomId)
+        
 
         //SOCKET IO
         io.emit("deleteRoom", senetizeRoom(room))

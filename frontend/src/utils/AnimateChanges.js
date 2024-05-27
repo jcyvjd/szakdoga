@@ -41,9 +41,10 @@ export const animateTakeTiles = (previousState, currentState) => {
                 return null;
             }
         }
+        console.log("AnimateTakeTiles marketId: ", marketId);
         //ha prevMarket null, akkor nem takeTile tortent (talan korVege)
         //eloszor ha nem null akkor meganimaljuk a takeTile-t
-        else//(prevMarket !== null){
+        if(prevMarket !== null)
         {
             //market to playerBoard.collectedTiles
             const prevPlayerBoard = previousState.playerBoards.find(playerBoard => playerBoard.playerId._id === playerId);

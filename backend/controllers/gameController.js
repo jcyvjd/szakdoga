@@ -758,7 +758,7 @@ export const deleteGame = async (gameId) => {
             });
         });
 
-        game.forEach(playerBoard => {
+        game.playerBoards.forEach(playerBoard => {
             PlayerBoard.findByIdAndDelete(playerBoard._id);
         });
 

@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import StatusBoard from "../../components/game/StatusBoard";
 import GameOverPanel from "../../components/game/GameOverPanel";
 import { Collapse, Ripple, initTWE } from "tw-elements";
+import useGame from "../../hooks/useGame";
 
 initTWE({ Collapse, Ripple });
 
@@ -24,7 +25,7 @@ const Session = () => {
   const { rooms, setRooms } = useRoomContext();
   const { leaveRoom, getRooms, loading } = useJoinRoom();
   const { gameState, setGameState } = useGameContext();
-  const { setupGame, getGame, takeTiles } = useListenGame();
+  const { setupGame, getGame, takeTiles } = useGame();
   const { socket, setSocket } = useSocketContext();
   useListenGame();
   useListenRooms();

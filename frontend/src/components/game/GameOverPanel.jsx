@@ -6,7 +6,7 @@ import useListenRooms from '../../hooks/useListenRooms';
 
 const GameOverPanel = ({ playerBoards }) => {
   console.log("GAMEOVER playerBoards: ", playerBoards);
-  const { leaveRoom } = useListenRooms();
+  const { leaveRoom } = useJoinRoom();
   const { rooms } = useRoomContext();
   const { authUser } = useAuthContext();
 
