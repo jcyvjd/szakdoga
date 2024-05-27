@@ -27,7 +27,8 @@ const protectRoute = async (req, res, next) => {
     } catch (error) {
         console.log("Error in protectRoute middleware", error.message)
         if(error.name === 'TokenExpiredError'){
-            return res.status(401).json({error: "Session expired - Token Expired"})
+            res.status(401).json({error: "Session expired - Token Expired"})
+            return
         }
         res.status(400).json({error: "Internal server error"})
     }

@@ -492,11 +492,13 @@ export const takeTiles = async (io, data) => {
 
         // Check if it's the player's turn
         if (!game.playerToMove.equals(user._id)) {
+            io.emit("Error", "Not the player's turn");
             return console.log("Not the player's turn");
         }
 
         // Check if the move is valid
         if (!isValideMove(playerBoard, color, row)) {
+            io.emit("Error", "Invalid move");
             return console.log("Invalid move");
         }
 

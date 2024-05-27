@@ -136,10 +136,12 @@ const Session = () => {
 
   useEffect(() => {
     socket?.on("GameOver", (data) => {
-      setGameOver(true);
-      console.log("Game Over: ");
-      setFinalPlayedBoards(data.playerBoards);
-      setGameState(null);
+      setTimeout(() => {
+        setGameOver(true);
+        console.log("Game Over: ");
+        setFinalPlayedBoards(data.playerBoards);
+        setGameState(null);
+      }, 500);
     });
 
     console.log("gameState: ", gameState);
@@ -210,13 +212,20 @@ const Session = () => {
         </div>
         {/* Right side content */}
         <div
-          className={`w-full lg:w-2/3 lg:ml-auto lg:relative flex flex-col overflow-auto items-center justify-center transition-opacity duration-300 ease-in-out ${
-            !isPanelOpen ? "flex" : "hidden"
-          } lg:!flex`}
+          className={`w-full lg:w-2/3 lg:ml-auto lg:relative flex flex-col overflow-auto items-center justify-center 
+          transition-opacity duration-300 ease-in-out ${!isPanelOpen ? "flex" : "hidden" } h-full lg:!flex`}
         >
           {/* Status Board */}
           {!gameState && !gameOver && room && room.users.length > 0 && (
-            <div className="flex-grow flex justify-center items-center">
+            <div ref={ref => {
+              if (ref) {
+                ref.style.opacity = '0';
+                setTimeout(() => {
+                  ref.style.opacity = '1';
+                }, 0);
+              }
+            }}
+            className="flex-grow w-full flex justify-center items-center  transition-opacity duration-500 ease-in-out">
               <StatusBoard
                 users={room?.users}
                 authUserId={authUser._id}
@@ -226,7 +235,14 @@ const Session = () => {
           )}
           {/* Game Over Panel */}
           {gameOver && (
-            <div className="h-full flex justify-center items-center">
+            <div ref={ref => {
+              if (ref) {
+                ref.style.opacity = '0';
+                setTimeout(() => {
+                  ref.style.opacity = '1';
+                }, 0);
+              }
+            }} className="h-full w-full flex justify-center items-center transition-opacity duration-500 ease-in-out">
               <GameOverPanel playerBoards={finalPlayedBoards} />
             </div>
           )}

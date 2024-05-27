@@ -8,9 +8,13 @@ import Home from './pages/home/Home'
 import Session from './pages/session/Session'
 import Navbar from "./components/Navbar"
 import { useAuthContext } from './context/AuthContext'
+import useListenErrors from './hooks/useListenErrors'
+import useRedirect from './hooks/useRedirect'
 
 function App() {
-  const { authUser } = useAuthContext()
+  const { authUser } = useAuthContext();
+  useListenErrors();
+  useRedirect();
 
   return (
     <div className='h-screen flex flex-col'>

@@ -103,6 +103,7 @@ export const joinRoom = async (req,res) => {
         if(room.hasPassword){
             const isPasswordCorrect = await bcrypt.compare(password, room?.password || "")
             if(!isPasswordCorrect){
+                io.emit("Error", "Invalid password")
                 return res.status(400).json({error:"Invalid password"})
             }
         }
@@ -115,12 +116,15 @@ export const joinRoom = async (req,res) => {
         
         const roomba = await Room.findById(roomId)
         if(!roomba){
+            io.emit("Error", "No room found with such id")
             return res.status(400).json({error:"No room found with such id"})
         }
         if(roomba.gameId){
+            io.emit("Error", "Cannot join room while in game session")
             return res.status(400).json({error:"Cannot join room while in game session"})
         }
         if(roomba.users.length >= 4){
+            io.emit("Error", "Room is full")
             return res.status(400).json({error:"Room is full"})
         }
 
@@ -144,6 +148,7 @@ export const joinRoom = async (req,res) => {
 
     } catch (error) {
         console.log("Error in joinRoom: ", error.message);
+        io.emit("Error", "error.message")
         res.status(500).json({error:"Internal server error"});
     }
 }
@@ -207,6 +212,7 @@ export const leaveRoom = async (req, res) => {
         res.status(200).json(senitizedRoom);
     } catch (error) {
         console.log("Error in leaveRoom: ", error.message);
+        io.emit("Error", error.message);
         res.status(500).json({ error: "Internal server error" });
     }
 };

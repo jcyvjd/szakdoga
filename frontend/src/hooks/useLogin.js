@@ -19,7 +19,7 @@ const useLogin = () => {
             })
             const data = await res.json()
             if(data.error){
-                throw new Error(error)
+                throw new Error(data.error)
             }
             console.log("authUser: ",data)
             localStorage.setItem("authUser", JSON.stringify(data))

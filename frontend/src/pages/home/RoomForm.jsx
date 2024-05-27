@@ -43,7 +43,6 @@ const RoomForm = () => {
     }
 
     const room = { name: roomName, password };
-
     const response = await fetch("/api/rooms", {
       method: "POST",
       body: JSON.stringify(room),

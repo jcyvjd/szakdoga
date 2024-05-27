@@ -6,7 +6,7 @@ import useListenRooms from '../../hooks/useListenRooms';
 
 const GameOverPanel = ({ playerBoards }) => {
   console.log("GAMEOVER playerBoards: ", playerBoards);
-  const { leaveRoom } = useJoinRoom();
+  const { leaveRoom, loading } = useJoinRoom();
   const { rooms } = useRoomContext();
   const { authUser } = useAuthContext();
 
@@ -20,8 +20,9 @@ const GameOverPanel = ({ playerBoards }) => {
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="table">
+    <div className="overflow-x-auto w-4/5 mx-auto transform scale-125">
+      <h1 className='text-4xl text-blue-500 mb-4 text-center'>Game Over!</h1>
+      <table className="table w-full">
         <thead>
           <tr>
             <th></th>
@@ -34,7 +35,7 @@ const GameOverPanel = ({ playerBoards }) => {
             .slice()
             .sort((a, b) => b.points - a.points)
             .map((player, index) => (
-              <tr key={index} className="hover">
+              <tr key={index} className="">
                 <th>{index + 1}</th>
                 <td>{player.playerId.username}</td>
                 <td>{player.points}</td>
@@ -44,9 +45,13 @@ const GameOverPanel = ({ playerBoards }) => {
       </table>
       <button
         onClick={handleLeaveRoom}
-        className="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        className={`mt-4 w-2/3 px-4 py-2 rounded transition-all duration-200 ${loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'} mx-auto block`}
+        disabled={loading}
       >
-        Accept
+        {loading ? 
+          <div className="loading loading-spinner"></div> 
+        : 
+          ('Accept')}
       </button>
     </div>
   );

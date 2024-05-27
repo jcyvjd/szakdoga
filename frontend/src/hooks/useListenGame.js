@@ -8,7 +8,6 @@ import {
   animatePlayerLeft,
   animateNewRound,
 } from "../utils/AnimateChanges";
-import toast from "react-hot-toast";
 
 const useListenGame = () => {
   const { authUser } = useAuthContext();
@@ -25,16 +24,14 @@ const useListenGame = () => {
           break;
         case "NewRound":
           console.log("NewRound received: ");
-          animateNewRound(gameState, data);
-          setGameState((prevState) => ({
-            ...prevState,
-            markets: data.markets,
-            sharedMarket: data.sharedMarket,
-            palyerToMove: data.playerToMove,
-          }));
+          //animateNewRound(gameState, data);
+            setGameState(data);
+          console.log("newRound vege")
           break;
         case "GameOver":
-          setGameState(data);
+            setTimeout(() => {
+                setGameState(data);
+            }, 500);
           break;
         case "RoundOver":
           animateRoundOver(gameState, data);
@@ -55,7 +52,7 @@ const useListenGame = () => {
               playerBoards: data.playerBoards,
               playerToMove: data.playerToMove,
             }));
-          }, 500);
+          }, 0);
           break;
         case "GetGame":
           setGameState(data);

@@ -1,0 +1,42 @@
+Game Board körluli flex wrap nem kene. A PB-ket is eltekeri. Csak a marketek kore kell?
+
+
+
+
+<div className="flex justify-around text-center w-full overflow-y-auto no-scrollbar items-center">
+  <div className="m-5 inline-block">
+    <PlayerBoardCard
+      playerBoard={gameState.playerBoards[2]}
+      onCollectedTilesClick={handleRowClick}
+    />
+  </div>
+  <div className="m-5 inline-block">
+    <PlayerBoardCard
+      playerBoard={gameState.playerBoards[3]}
+      onCollectedTilesClick={handleRowClick}
+    />
+  </div>
+</div>
+<div className="flex justify-around text-center w-full">
+  <div className="flex flex-wrap pt-5 justify-around text-center w-full">
+    {gameState.markets.map((market, index) => (
+      <div className="inline-block m-1" key={index}>
+        <Market
+          marketId={index}
+          tiles={market}
+          onTileClick={handleTileClick}
+          selectedTile={selectedTile}
+          selectedMarket={selectedMarket}
+        />
+      </div>
+    ))}
+  </div>
+  <div className="block m-1">
+    <SharedMarket
+      tiles={gameState.sharedMarket}
+      onTileClick={(tile) => handleTileClick(tile, -1)}
+      selectedTile={selectedTile}
+      selectedMarket={selectedMarket}
+    />
+  </div>
+</div>

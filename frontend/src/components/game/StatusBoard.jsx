@@ -7,7 +7,7 @@ const StatusBoard = ({ users, authUserId, onToggleReady }) => {
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto transform scale-125">
       <table className="table">
         <thead>
           <tr>
