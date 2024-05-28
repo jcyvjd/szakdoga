@@ -13,10 +13,9 @@ export const SocketContextProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const { authUser } = useAuthContext();
 
-    console.log("Sokcket(from context): ",socket);
     useEffect(() => {
         if(authUser){
-            const socket = io("http://localhost:5000", {
+            const socket = io(import.meta.env.VITE_APP_SERVER_URL, {
 				query: {
 					userId: authUser._id,
 				},

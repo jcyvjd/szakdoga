@@ -679,14 +679,6 @@ export const leaveCurrentGame = async (userId) => {
         const playerBoard = await PlayerBoard.findOneAndDelete({ playerId: userId });
         if(!playerBoard){ return; }
 
-        // megjelentites miatt benne marad a playerBoard, eleg cak a playersbol kivenni
-        // const index = game.playerBoards.findIndex(board => board.playerId.toString() === userId.toString());
-        // if (index > -1) {
-        //     console.log("playerBoard deleted");
-        //     game.playerBoards.splice(index, 1);
-        // }
-
-        //remove player from game, also change playerToMove if needed
         if(game.playerToMove.toString() === userId.toString()){
             game.playerToMove = game.players[(game.players.indexOf(userId) + 1) % game.players.length];
         }

@@ -12,5 +12,4 @@ export const gameHandler = (socket) => {
     socket.on("TakeTiles", async (data) => {
         takeTiles(socket, data);
     });
-
 }

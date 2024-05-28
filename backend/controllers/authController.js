@@ -3,7 +3,6 @@ import Room from "../models/roomModel.js"
 import bcrypt from "bcryptjs"
 import generateTokenAndSetCookie from "../utils/generateToken.js";
 import { io } from "../socket/socket.js"
-import Game from "../models/game/gameModel.js";
 import { leaveCurrentGame } from "./gameController.js";
 
 export const signup = async (req, res) => {

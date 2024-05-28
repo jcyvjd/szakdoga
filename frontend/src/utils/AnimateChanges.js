@@ -240,21 +240,15 @@ const handleTileMove = (data) => {
     try {
         console.log("MoveTile", data);
         const { fromElementId, toElementId } = data;
-        console.log("fromElementId", fromElementId);
-        console.log("toElementId", toElementId);
 
         console.log("Still MOVING")
 
         const fromElement = document.getElementById(fromElementId);
         const toElement = document.getElementById(toElementId);
-        console.log("fromElement", fromElement);
-        console.log("toElement", toElement);
 
         if (fromElement && toElement) {
             const fromRect = fromElement.getBoundingClientRect();
             const toRect = toElement.getBoundingClientRect();
-            console.log("fromRect", fromRect);
-            console.log("toRect", toRect);
 
             // Create a temporary element for the animation
             const tempTile = fromElement.cloneNode(true);
@@ -273,9 +267,6 @@ const handleTileMove = (data) => {
                 easing: 'ease-in-out'
             }).onfinish = () => {
                 document.body.removeChild(tempTile);
-
-                //trigger next animation
-                //setAnimationQueue(animationQueue.slice(1));
             };
         }
     } catch (error) {
