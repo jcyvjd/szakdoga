@@ -2,7 +2,6 @@ import React from 'react';
 import useJoinRoom from '../../hooks/useJoinRoom';
 import { useRoomContext } from '../../context/RoomContext';
 import { useAuthContext } from '../../context/AuthContext';
-import useListenRooms from '../../hooks/useListenRooms';
 
 const GameOverPanel = ({ playerBoards }) => {
   console.log("GAMEOVER playerBoards: ", playerBoards);

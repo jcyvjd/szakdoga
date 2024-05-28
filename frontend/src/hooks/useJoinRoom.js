@@ -8,7 +8,7 @@ import toast from 'react-hot-toast'
 
 
 const useJoinRoom = () => {
-    const {rooms,setRooms} = useRoomContext();
+    const {setRooms} = useRoomContext();
     const [loading, setLoading] = useState(false);
     const {authUser, setAuthUser} = useAuthContext();
     const {setGameState} = useGameContext();
@@ -63,28 +63,6 @@ const useJoinRoom = () => {
         }
     }
 
-     const deleteRoom = async (room) => {
-        setLoading(true);
-        try {
-            const response = await fetch("/api/rooms/delete/" + room._id, {
-                method:"DELETE",
-                headers: {"Content-Type" : "application/json"},
-            })
-            const data = await response.json()
-    
-            if(response.ok){
-                //setRooms(rooms.filter((existingRoom) => existingRoom._id !== data._id));
-                navigate(`/`);
-            } else{
-                throw new Error(response.statusText)
-            }
-        } catch (error) {
-            throw new Error(response.statusText)
-        }finally{
-            setLoading(false);
-        }
-    }
-
     const getRooms = async () => {
         setLoading(true);
         try {
@@ -107,7 +85,7 @@ const useJoinRoom = () => {
         }
     }
 
-    return { joinRoom, leaveRoom, deleteRoom, getRooms, loading}
+    return { joinRoom, leaveRoom, getRooms, loading}
 }
 
 export default useJoinRoom

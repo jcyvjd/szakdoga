@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import useLogout from "../hooks/useLogout";
-import { Link } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import { FiLogOut, FiHelpCircle } from "react-icons/fi";
 import logo from "../assets/azul_logo2.png";
@@ -30,12 +29,6 @@ const Navbar = () => {
             />
           </div>
         )}
-        {/*!authUser && (
-          <div>
-            <Link to="/login">Login</Link> / 
-            <Link to="/signup">Signup</Link>
-          </div>
-        )*/}
       </nav>
       <HelpPanel isOpen={showHelpPanel} setShowHelpPanel={setShowHelpPanel} />
     </>

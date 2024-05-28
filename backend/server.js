@@ -4,7 +4,6 @@ import cookieParser from "cookie-parser"
 import authRoutes from "./routes/authRouts.js"
 import roomRoutes from "./routes/roomRoutes.js"
 
-//import userRoutes from "./routes/userRoutes.js"
 import connectToMongoDB from "./db/connectToMongoDB.js";
 import { app, server } from "./socket/socket.js"
 

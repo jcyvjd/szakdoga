@@ -7,8 +7,6 @@ import toast from 'react-hot-toast'
 const useLogout = () => {
     const [loading, setLoading] = useState(false)
     const {authUser, setAuthUser} =  useAuthContext()
-    const { rooms } = useRoomContext()
-    const {leaveRoom} = useJoinRoom()
 
     const logout = async () =>{
         setLoading(true)

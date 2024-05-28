@@ -29,7 +29,7 @@ function App() {
         </Routes>
         <Toaster />
       </div>
-      <div className=''>
+      <div>
         <Navbar/>
       </div>
     </div>

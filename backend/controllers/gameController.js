@@ -55,9 +55,6 @@ const loadMarkets = async (game) => {
 
 //creating a game 
 export const setupGame = async (io, data) => {
-    // if (!req.user.roomId) { //kozos ready-zes utan indul csak
-    //     return res.status(400).json({ error: "User is not in a room" });
-    // }
     console.log("setupGame")
     const {roomId} = data;
     console.log("setup roomId: ", roomId)
@@ -66,9 +63,6 @@ export const setupGame = async (io, data) => {
         if (!room) {
             return console.log("No such room");
         }
-        // if(room.owner.toString() !== req.user._id.toString()){
-        //     return res.status(400).json({error: "Only the owner can start the game"});
-        // }
 
         let newGame = await Game.findOne({ roomId: room._id });
         if (newGame) {
@@ -736,7 +730,7 @@ export const leaveCurrentGame = async (userId) => {
                 io.to(receiverSocketId).emit("GameOver",  payload );
                 console.log("GameOverSent", _userId)
             }
-            io.emit("GameOver",  payload );
+            //io.emit("GameOver",  payload );
         }
     }
     catch (error) {

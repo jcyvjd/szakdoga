@@ -4,7 +4,7 @@ import { useAuthContext } from "../context/AuthContext"
 
 const useSignup = () => {
     const [loading, setLoading] = useState(false)
-    const {authUser, setAuthUser} = useAuthContext()
+    const {setAuthUser} = useAuthContext()
 
     const signup = async ({username, password, confirmPassword}) => {
         const success = handleInputErrors({username, password, confirmPassword})
@@ -23,9 +23,7 @@ const useSignup = () => {
                 throw new Error(data.error)
             }
 
-            
             localStorage.setItem("authUser", JSON.stringify(data))
-            
             setAuthUser(data)
 
         } catch (error) {
