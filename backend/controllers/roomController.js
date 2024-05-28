@@ -67,6 +67,10 @@ export const createRoom = async (req, res) => {
             const salt = await bcrypt.genSalt(10)
             hashedPassword = await bcrypt.hash(password, salt)
         }
+        const tmp = await Room.findOne({name})
+        if(tmp){
+            return res.status(400).json({error:"Room name already exists"})
+        }
         const room = await Room.create({
             name,
             owner: req.user._id,
@@ -99,7 +103,7 @@ export const joinRoom = async (req,res) => {
         if(!room){
             return res.status(400).json({error:"No room found with such id"})
         }
-        
+
         if(room.hasPassword){
             const isPasswordCorrect = await bcrypt.compare(password, room?.password || "")
             if(!isPasswordCorrect){

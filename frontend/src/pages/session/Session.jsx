@@ -20,7 +20,7 @@ import useGame from "../../hooks/useGame";
 initTWE({ Collapse, Ripple });
 
 const Session = () => {
-  const { authUser, setAuthUser } = useAuthContext();
+  const { authUser } = useAuthContext();
   const { roomId } = useParams();
   const { rooms, setRooms } = useRoomContext();
   const { leaveRoom, getRooms, loading } = useJoinRoom();
@@ -132,11 +132,6 @@ const Session = () => {
     getGame(authUser.roomId);
     console.log("getGame: ", authUser.roomId);
     setIsPanelOpen(false);
-    if(room){
-      const status = room.users.find(user => user._id === authUser._id).status;
-      setPlayerReady(status === "ready");
-      console.log("status: ", status);
-    }
   }, []);
 
   useEffect(() => {
@@ -160,12 +155,6 @@ const Session = () => {
     console.log("canStartGame: ", canStartGame());
     if (canStartGame()) {
       handleSetupGame();
-    }
-    if(room){
-      if(room.users.length > 0){
-      const status = room.users?.find(user => user._id === authUser._id)?.status || "waiting";
-      setPlayerReady(status === "ready");
-      console.log("status: ", status);}
     }
   }, [room?.users, playerReady]);
 
@@ -207,8 +196,7 @@ const Session = () => {
             {!gameState && !gameOver && (
               <button
                 onClick={handleToggleReady}
-                className={`inline-flex flex-1 items-center justify-center py-2 px-4 rounded-md 
-                ${
+                className={`inline-flex flex-1 items-center justify-center py-2 px-4 rounded-md ${
                   playerReady
                     ? "bg-success text-success-content"
                     : "bg-base-200 text-base-content"
