@@ -20,9 +20,7 @@ export const SocketContextProvider = ({ children }) => {
 					userId: authUser._id,
 				},
 			});
-
             setSocket(socket);
-
             return () => {socket.close()};
         }else{
             if(socket){
@@ -36,3 +34,6 @@ export const SocketContextProvider = ({ children }) => {
         <SocketContext.Provider value={{socket}}> {children}</SocketContext.Provider>
     );
 };
+
+
+

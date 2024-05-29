@@ -15,7 +15,6 @@ const useListenRooms = () => {
         socket?.on("newRoom", (room) => {
             setRooms([room, ...rooms]);
         });
-
         socket?.on("deleteRoom", (room) => {
             setRooms(rooms.filter((existingRoom) => existingRoom._id !== room._id));
             if (authUser.roomId === room._id) {
@@ -23,7 +22,6 @@ const useListenRooms = () => {
                 setGameState(null);
             }
         });
-
         socket?.on("updateRoom", (room) => {
             setRooms(rooms.map((existingRoom) => {
                 if (existingRoom._id === room._id) {
@@ -33,11 +31,9 @@ const useListenRooms = () => {
                 }
             }));
         });
-
         socket?.on("getRooms", allRooms => {
             setRooms(allRooms);
         });
-
         return () => {
             socket?.off("newRoom");
             socket?.off("deleteRoom");
@@ -47,3 +43,6 @@ const useListenRooms = () => {
     }, [socket, rooms, setRooms]);
 };
 export default useListenRooms;
+
+
+

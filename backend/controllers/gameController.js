@@ -147,15 +147,12 @@ export const setupGame = async (io, data) => {
 
 const startNewRound = async (game) => {
     try {
-        console.log("startNewRound")
         if (!game) {
             throw new Error("No game found");
         }
         if(game.markets.length !== game.players.length + 3){
-            console.log("players count changed")
             game.markets = newMarkets(game.players.length + 3);
         }
-        console.log("New round pllayers: ", game.players)
         
         await loadMarkets(game);
         game.sharedMarket = ['white'];
@@ -182,13 +179,10 @@ const startNewRound = async (game) => {
             roomId: populatedGame.roomId
         };
         
-        console.log("NewRound event")
         for (const userId of game.players) {
-            console.log("StartNewRound userId: ", userId)
             const receiverSocketId = getReceiverSocketId(userId);
             io.to(receiverSocketId).emit("NewRound", payload );
         }
-        console.log("NewRound end Players: ", game.players)
     } catch (error) {
         console.log("Error in startNewRound: ", error.message);
     }
@@ -319,8 +313,7 @@ const onRoundOver = async (game) => {
                     }
                     playerBoard.collectedTiles[row] = Array(row + 1).fill('empty');
 
-                    //Calculate points
-                    console.log("calculatePoints: ", calculatePoints(playerBoard.wallTiles, row, indexForColorAtRow(tile, row)));
+                    //Calculate points console.log("calculatePoints: ", calculatePoints(playerBoard.wallTiles, row, indexForColorAtRow(tile, row)));
                     playerBoard.points += calculatePoints(playerBoard.wallTiles, row, indexForColorAtRow(tile, row));
 
                     //check for game over (a wall row is full)
@@ -361,7 +354,6 @@ const onRoundOver = async (game) => {
                 default:
                     break;
             }
-            console.log("minusPoints: ", minusPoints);
             playerBoard.points -= minusPoints;
 
             //not white floortiles back to bag
@@ -406,7 +398,6 @@ const onRoundOver = async (game) => {
         };
 
         if(isGameOver(game)){
-            console.log("Game is over");
             //if(true){
             for (const userId of game.players) {
                 const receiverSocketId = getReceiverSocketId(userId);
@@ -468,7 +459,6 @@ const isValideMove = (playerBoard, color, rowInd) => {
 export const takeTiles = async (io, data) => {
     try {
         const user = await User.findById( {_id: io.handshake.query.userId});
-        console.log("user: ", user);
         if (!user || !user.roomId) {
             return console.log("No such user or user is not in a room");
         }
@@ -603,8 +593,6 @@ export const takeTiles = async (io, data) => {
             await onRoundOver(game);
         }
 
-        console.log("TakeTiles success")
-
     } catch (error) {
         console.log("Error in takeTiles: ", error.message);
        
@@ -615,14 +603,12 @@ export const takeTiles = async (io, data) => {
 //Send back the game
 export const getGame = async (socket, data) => {
     try {
-        console.log("getGame")
         const user = await User.findById( {_id: socket.handshake.query.userId});
         const {roomId} = data;
         if (!user || !roomId || user.roomId !== roomId) {
             return console.log("No such user or user is not in a room");
         }
 
-        console.log("roomId: ", roomId);
         const game = await Game.findOne({ roomId: roomId }).populate('playerBoards');
 
         if (!game) {
@@ -661,15 +647,13 @@ export const getGame = async (socket, data) => {
             //io.to(receiverSocketId).emit("UpdateGame", payload );
         }
         io.emit("GetGame", payload );
-        console.log("getGame end")
     } catch (error) {
         console.log("Error in getGame: ", error.message);
     }
 };
 
 export const leaveCurrentGame = async (userId) => {
-    try {
-        console.log("leaveCurrentGame userId: ", userId)    
+    try { 
         const user = await User.findById(userId);
         if (!user || !user.roomId) {
             return console.log("User not found or not in a room");
@@ -712,7 +696,6 @@ export const leaveCurrentGame = async (userId) => {
             players: game.players,
             roomId: game.roomId
         };
-        console.log("payload players:", payload.players)
         if(game.players.length > 1){
             for (const _userId of game.players) {
                 const receiverSocketId = getReceiverSocketId(_userId);
@@ -721,12 +704,10 @@ export const leaveCurrentGame = async (userId) => {
             io.emit("PlayerLeftGame",  payload );
         }
         else{
-            console.log("Game is over, 1 player left");
             game.gameStatus = "ended";
             for (const _userId of game.players) {
                 const receiverSocketId = getReceiverSocketId(_userId);
                 io.to(receiverSocketId).emit("GameOver",  payload );
-                console.log("GameOverSent", _userId)
             }
             //io.emit("GameOver",  payload );
         }

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useLogout from "../hooks/useLogout";
 import { useAuthContext } from "../context/AuthContext";
 import { FiLogOut, FiHelpCircle } from "react-icons/fi";
-import logo from "../assets/azul_logo2.png";
+import logo from "/vite.svg";
 import HelpPanel from "./HelpPanel";
 
 const Navbar = () => {
@@ -14,8 +14,8 @@ const Navbar = () => {
     <>
       <nav className="bg-base-200 text-base-content flex justify-between  w-full z-100">
         <div className="flex items-center">
-          <img src={logo} alt="Azul_Logo" className="relative -left-10 h-20" />
-          <button type="button" className="ml-4 mr-4" onClick={() => setShowHelpPanel(true)}>
+          <img src={logo} alt="Vite_Logo" className="relative left-4 h-10 my-2" />
+          <button type="button" className="ml-8 mr-4" onClick={() => setShowHelpPanel(true)}>
             <FiHelpCircle size={24} />
           </button>
         </div>

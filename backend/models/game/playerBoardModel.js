@@ -35,7 +35,7 @@ const playerBoardSchema = new mongoose.Schema({
     floorTiles:{
       type: [String], 
       enum: ['red', 'black', 'blue', 'azure', 'yellow', 'empty', 'white'],
-      default:[ 'empty', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty'],
+      default:[ 'empty','empty','empty','empty','empty','empty','empty'],
     }
   });
 
