@@ -6,7 +6,6 @@ import {
   animateRoundOver,
   animateTakeTiles,
   animatePlayerLeft,
-  animateNewRound,
 } from "../utils/AnimateChanges";
 
 const useListenGame = () => {
@@ -23,15 +22,12 @@ const useListenGame = () => {
           setGameState(data);
           break;
         case "NewRound":
-          console.log("NewRound received: ");
-          //animateNewRound(gameState, data);
             setGameState(data);
-          console.log("newRound vege")
           break;
         case "GameOver":
             setTimeout(() => {
                 setGameState(data);
-            }, 500);
+            }, 5000);
           break;
         case "RoundOver":
           animateRoundOver(gameState, data);
@@ -43,6 +39,10 @@ const useListenGame = () => {
           }, 500);
           break;
         case "TakeTiles":
+            setGameState((prevState) => ({
+                ...prevState,
+                markets: data.markets
+            }));
             animateTakeTiles(gameState, data);
           setTimeout(() => {
             setGameState((prevState) => ({
@@ -52,17 +52,15 @@ const useListenGame = () => {
               playerBoards: data.playerBoards,
               playerToMove: data.playerToMove,
             }));
-          }, 0);
+          }, 500);
           break;
         case "GetGame":
           setGameState(data);
-          console.log("GetGame: ", data);
           break;
         case "UpdateGame":
           setGameState(data);
           break;
         case "PlayerLeftGame":
-          console.log("Player left the game: ", data);
           animatePlayerLeft(gameState, data);
           setGameState(data);
           break;
@@ -81,7 +79,6 @@ const useListenGame = () => {
 
   useEffect(() => {
     const handleEvent = (type, data) => {
-        console.log(`Event received: ${type}`, data);
       setEventQueue((prevQueue) => [...prevQueue, { type, data }]);
     };
 

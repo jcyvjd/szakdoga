@@ -160,7 +160,6 @@ export const joinRoom = async (req,res) => {
 
 export const leaveRoom = async (req, res) => {
     try {
-        console.log("Leaving room");
         const loggedInUserId = req.user._id;
         const roomId = req.params.id;
 
@@ -173,7 +172,6 @@ export const leaveRoom = async (req, res) => {
 
         // Leave the game if it exists
         if (room.gameId) {
-            console.log("Leaving game");
             await leaveCurrentGame(loggedInUserId);
         }
 

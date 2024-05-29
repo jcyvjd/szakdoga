@@ -1,7 +1,6 @@
 import React from 'react';
 
 const StatusBoard = ({ users, authUserId, onToggleReady }) => {
-  console.log("statusboard users: ",users)
   if (!users || users.length === 0) {
     return null;
   }

@@ -9,7 +9,6 @@ const useListenErrors = () => {
 
     useEffect(() => {
         socket?.on("Error", (error) => {
-            console.log("error: ", error);
             toast.error(error);
         });
 

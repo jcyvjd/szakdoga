@@ -26,7 +26,6 @@ const RoomCard = ({ room }) => {
       await joinRoom(room, null);
       return;
     }
-    console.log('Joining room:', room.name, password);
     await joinRoom(room, password);
   };
 

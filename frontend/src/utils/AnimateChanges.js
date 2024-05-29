@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 
 import tile_red from '../assets/tiles/tile_red.png';
 import tile_blue from '../assets/tiles/tile_blue.png';
@@ -18,8 +17,6 @@ const WallTilePattern = [
 export const animateTakeTiles = (previousState, currentState) => {
     if (!previousState || !currentState) return null;
     if(JSON.stringify(previousState) === JSON.stringify(currentState)) return null;
-    //if (!validateGameState(previousState) || !validateGameState(currentState)) return null;
-    console.log("AnimateTakeTiles", previousState, currentState);
     try {
         const animations = [];
         const playerId = previousState.playerToMove;
@@ -41,14 +38,12 @@ export const animateTakeTiles = (previousState, currentState) => {
                 return null;
             }
         }
-        console.log("AnimateTakeTiles marketId: ", marketId);
         //ha prevMarket null, akkor nem takeTile tortent (talan korVege)
         //eloszor ha nem null akkor meganimaljuk a takeTile-t
         if(prevMarket !== null)
         {
             //market to playerBoard.collectedTiles
             const prevPlayerBoard = previousState.playerBoards.find(playerBoard => playerBoard.playerId._id === playerId);
-            console.log("prevPlayerBoard", prevPlayerBoard);
             const currentPlayerBoard = currentState.playerBoards.find(playerBoard => playerBoard.playerId._id === playerId);
             for(let row = 0; row < prevPlayerBoard.collectedTiles.length; ++row){
                 for(let tileInd = 0; tileInd < prevPlayerBoard.collectedTiles[row].length; ++tileInd)
@@ -105,7 +100,6 @@ export const animateTakeTiles = (previousState, currentState) => {
 
 export const animateRoundOver = (previousState, currentState) => {
     if (!previousState || !currentState) return null;
-    console.log("AnimateRoundOver", previousState, currentState);
     try {
         const animations = [];
         // Iterate through player boards to find differences
@@ -126,7 +120,6 @@ export const animateRoundOver = (previousState, currentState) => {
                     const lastElementIndex = prevCollectedTilesRow.indexOf(lastElement);
 
                     const wallIndex = WallTilePattern[row].indexOf(lastElement);
-                    console.log("ROUNDOVER wallIndex", wallIndex);
                     if (lastElement !== undefined && lastElementIndex !== -1) {
                         const fromElementId = `playerBoard-${prevPlayerBoard._id}-col-${row}-tile-${lastElementIndex}`;
                         const toElementId = `playerBoard-${prevPlayerBoard._id}-wall-${row}-tile-${wallIndex}`;
@@ -152,8 +145,7 @@ export const animateRoundOver = (previousState, currentState) => {
                 }
             }
         }
-        animations.forEach((animation) => {
-            console.log("ANIMATION ROUND OVER", animation);
+        animations.forEach((animation) => {;
             handleTileMove(animation);
         });
     } catch (error) {
@@ -182,66 +174,13 @@ const getBGImage = (tile) => {
     }
 };
 
-export const animateNewRound = (previousState, currentState) => {
-    if (!previousState || !currentState) return null;
-    return null;
-    try {
-        // Animate tiles in markets
-        currentState.markets.forEach((market, marketIndex) => {
-            market.forEach((tile, tileIndex) => {
-                const tileElement = document.getElementById(`market-${marketIndex}-tile-${tileIndex}`);
-                if (tileElement) {
-                    // Temporarily add transition class
-                    tileElement.classList.add("transition-opacity");
-                    tileElement.style.opacity = "0";
-                    tileElement.style.backgroundImage = getBGImage(tile);
 
-                    const transitionEndHandler = () => {
-                        tileElement.style.opacity = "1";
-                        tileElement.removeEventListener("transitionend", transitionEndHandler);
-
-                        // Remove transition class after transition ends
-                        setTimeout(() => {
-                            tileElement.classList.remove("transition-opacity");
-                        }, 500); // 500ms is the duration of the transition
-                    };
-
-                    tileElement.addEventListener("transitionend", transitionEndHandler);
-                }
-            });
-        });
-
-        // Animate white tile in sharedMarket
-        const sharedMarketTile = document.getElementById("market--1-tile-0");
-        if (sharedMarketTile) {
-            // Temporarily add transition class
-            sharedMarketTile.classList.add("transition-opacity");
-
-            const sharedMarketTransitionEndHandler = () => {
-                sharedMarketTile.style.opacity = "1";
-                sharedMarketTile.removeEventListener("transitionend", sharedMarketTransitionEndHandler);
-
-                // Remove transition class after transition ends
-                setTimeout(() => {
-                    sharedMarketTile.classList.remove("transition-opacity");
-                }, 500); // 500ms is the duration of the transition
-            };
-
-            sharedMarketTile.addEventListener("transitionend", sharedMarketTransitionEndHandler);
-        }
-    } catch (error) {
-        console.log("Error in animateNewRound: ", error);
-    }
-};
 
 
 //kap egy toElementId-t, es egy fromElementId-t, es animacioval mozgatja a fromElementId-t a toElementId-re
 const handleTileMove = (data) => {
     try {
-        console.log("MoveTile", data);
         const { fromElementId, toElementId } = data;
-
-        console.log("Still MOVING")
 
         const fromElement = document.getElementById(fromElementId);
         const toElement = document.getElementById(toElementId);
@@ -278,26 +217,21 @@ const handleTileMove = (data) => {
 export const animatePlayerLeft = (previousState, currentState) => {
     try {
         if (!previousState || !currentState) return null;
-        console.log("AnimatePlayerLeft", previousState, currentState);
 
         // Find the player who left
         const leftPlayer = previousState.players.find(player => !currentState.players.includes(player));
         if(!leftPlayer || leftPlayer === 'undefined') return null;
-        console.log("LeftPlayerID", leftPlayer);
         // Find the player board of the left player
         const leftPlayerBoard = previousState.playerBoards.find(playerBoard => playerBoard.playerId._id === leftPlayer);
         if(!leftPlayerBoard || leftPlayerBoard === 'undefined') return null;
-        console.log("LeftPlayerBoard", leftPlayerBoard);
         
          // Apply styling to indicate the inactive player
          const leftPlayerBoardId = `playerBoard-${leftPlayerBoard._id}`;
          const leftPlayerBoardElement = document.getElementById(leftPlayerBoardId);
-         console.log("LeftPlayerBoardElement", leftPlayerBoardElement);
         
          if (leftPlayerBoardElement) {
              leftPlayerBoardElement.classList.add('desaturate');
          }
-        console.log("AFTER LEFT PLAYER");
     } catch (error) {
         console.error(error);
     }

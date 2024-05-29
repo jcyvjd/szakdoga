@@ -10,15 +10,18 @@ import { app, server } from "./socket/socket.js"
 const PORT = process.env.PORT || 5000
 
 
-dotenv.config()
-app.use(express.json())
-app.use(cookieParser())
+dotenv.config();
+app.use(express.json());
+app.use(cookieParser());
 
-app.use("/api/auth", authRoutes)
-app.use("/api/rooms",roomRoutes)
+app.use("/api/auth", authRoutes);
+app.use("/api/rooms",roomRoutes);
 
 
 server.listen(PORT, () => {
-    connectToMongoDB()
-    console.log(`Server running on port ${PORT}`)
+    connectToMongoDB();
+    console.log(`Server running on port ${PORT}`);
 })
+
+
+

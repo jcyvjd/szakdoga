@@ -13,3 +13,15 @@ export const gameHandler = (socket) => {
         takeTiles(socket, data);
     });
 }
+
+
+
+
+
+
+
+
+
+
+
+

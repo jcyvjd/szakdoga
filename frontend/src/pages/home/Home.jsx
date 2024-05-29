@@ -22,14 +22,14 @@ const Home = () => {
       });
       const data = await response.json();
       if (data.error) {
-        if (data.error === "Session expired - Token Expired") {
+        if (data.error === "Session expired - Token Expired" || data.error === "User not found") {
           logout();
           history.pushState("/login", "");
         }
       }
       setRooms(data);
     } catch (error) {
-      console.error("Error fetching rooms:", error);
+
     }
   };
 

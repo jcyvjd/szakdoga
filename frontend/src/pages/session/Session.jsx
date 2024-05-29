@@ -30,7 +30,6 @@ const Session = () => {
   useListenGame();
   useListenRooms();
 
-  console.log("roomID: ", roomId);
 
   const [selectedTile, setSelectedTile] = useState(null);
   const [selectedMarket, setSelectedMarket] = useState(null);
@@ -43,34 +42,26 @@ const Session = () => {
 
   //setRoom(rooms.find(room => room._id === roomId) || null);
   let room = rooms.find((room) => room._id === authUser.roomId) || null;
-  console.log("SESSION rooms: ", rooms);
-  console.log("SESSION room: ", room);
 
   const handleLeaveRoom = async () => {
     if (!authUser) {
       return;
     }
-    console.log("handleLeaveRoom elott: ", room.users);
     await leaveRoom(room);
     setGameState(null);
-    console.log("handleLeaveRoom utan: ", room.users);
   };
 
   const handleSetupGame = async () => {
     if (!authUser) {
       return;
     }
-    console.log("SETUP");
-    console.log("SETUP authUser: ", authUser);
     if (room && room.users[0]._id === authUser._id) {
       await setupGame(room._id);
-      console.log("SETUP UTAN");
     }
     setPlayerReady(false);
   };
 
   const handleTakeTiles = async (tile, market, row) => {
-    console.log(`Taking tiles ${tile} from market ${market} to row ${row}`);
     if (tile !== null && market !== null && row !== null) {
       await takeTiles(tile, market, row);
       setSelectedTile(null);
@@ -87,7 +78,6 @@ const Session = () => {
   };
 
   const handleTileClick = (tile, marketId) => {
-    console.log(`Tile ${tile} clicked in market ${marketId}`);
     setSelectedTile(tile);
     setSelectedMarket(marketId);
     if (selectedRow !== null) {
@@ -108,7 +98,6 @@ const Session = () => {
     });
 
     const data = await res.json();
-    console.log("handleReady data: ", data);
     if (res.ok) {
       setPlayerReady((prevState) => !prevState);
     } else {
@@ -130,7 +119,6 @@ const Session = () => {
   useEffect(() => {
     getRooms();
     getGame(authUser.roomId);
-    console.log("getGame: ", authUser.roomId);
     setIsPanelOpen(false);
   }, []);
 
@@ -138,13 +126,10 @@ const Session = () => {
     socket?.on("GameOver", (data) => {
       setTimeout(() => {
         setGameOver(true);
-        console.log("Game Over: ");
         setFinalPlayedBoards(data.playerBoards);
         setGameState(null);
-      }, 500);
+      }, 5000);
     });
-
-    console.log("gameState: ", gameState);
 
     return () => {
       socket?.off("GameOver");
@@ -152,13 +137,11 @@ const Session = () => {
   }, [socket, gameState, gameOver]);
 
   useEffect(() => {
-    console.log("canStartGame: ", canStartGame());
     if (canStartGame()) {
       handleSetupGame();
     }
   }, [room?.users, playerReady]);
 
-  console.log("game state ", gameState);
 
   return (
     <div className="h-full flex flex-col">
@@ -242,7 +225,7 @@ const Session = () => {
                   ref.style.opacity = '1';
                 }, 0);
               }
-            }} className="h-full w-full flex justify-center items-center transition-opacity duration-500 ease-in-out">
+            }} className="h-full w-full flex justify-center items-center transition-opacity duration-1000 ease-in-out">
               <GameOverPanel playerBoards={finalPlayedBoards} />
             </div>
           )}

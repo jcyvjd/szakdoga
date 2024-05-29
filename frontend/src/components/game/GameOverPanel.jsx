@@ -4,7 +4,6 @@ import { useRoomContext } from '../../context/RoomContext';
 import { useAuthContext } from '../../context/AuthContext';
 
 const GameOverPanel = ({ playerBoards }) => {
-  console.log("GAMEOVER playerBoards: ", playerBoards);
   const { leaveRoom, loading } = useJoinRoom();
   const { rooms } = useRoomContext();
   const { authUser } = useAuthContext();

@@ -8,7 +8,6 @@ export const sendMessage = async ( io, data) => {
     try {
         const userId = io.handshake.query.userId;
         const { receiverId, message } = data;
-        console.log("message data: ", data)
 
         const user = await User.findOne({ _id: userId });
         if(!user){

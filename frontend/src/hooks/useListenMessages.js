@@ -31,7 +31,6 @@ const useListenMessages = () => {
     }, [socket, messages, setMessages, authUser.roomId]);
 
     const sendMessage = (message) => {
-        console.log("sendMessage: ", message);
         if(!message) return;
         if(!authUser.roomId) return;
         socket?.emit("sendMessage", { receiverId: authUser.roomId, message});

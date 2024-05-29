@@ -21,7 +21,6 @@ const useJoinRoom = () => {
     };
 
     const joinRoom = async (room, password) => {
-        console.log("joinRoom: ", room.name, password);
         setLoading(true);
         try {
             const response = await fetch("/api/rooms/join/" + room._id, {
@@ -84,7 +83,6 @@ const useJoinRoom = () => {
                 headers: { "Content-Type": "application/json" },
             });
             const data = await response.json();
-            console.log("getRooms data: ", data);
             if (response.ok) {
                 setRooms(data);
             } else {
