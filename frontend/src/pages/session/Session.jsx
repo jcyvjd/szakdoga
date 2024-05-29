@@ -248,24 +248,26 @@ const Session = () => {
           )}
           {/* Game Board */}
           {gameState && !gameOver && (
-            <div className="flex flex-wrap justify-around text-center w-full overflow-y-auto no-scrollbar items-center">
+            <div className="flex flex-col justify-around text-center w-full overflow-y-auto no-scrollbar items-center">
               {/* Conditionally render first row */}
-              {gameState.playerBoards[2] && (
-                <div className="m-5 inline-block">
-                  <PlayerBoardCard
-                    playerBoard={gameState.playerBoards[2]}
-                    onCollectedTilesClick={handleRowClick}
-                  />
-                </div>
-              )}
-              {gameState.playerBoards[3] && (
-                <div className="m-5 inline-block">
-                  <PlayerBoardCard
-                    playerBoard={gameState.playerBoards[3]}
-                    onCollectedTilesClick={handleRowClick}
-                  />
-                </div>
-              )}
+              <div>
+                {gameState.playerBoards[2] && (
+                  <div className="m-5 inline-block">
+                    <PlayerBoardCard
+                      playerBoard={gameState.playerBoards[2]}
+                      onCollectedTilesClick={handleRowClick}
+                    />
+                  </div>
+                )}
+                {gameState.playerBoards[3] && (
+                  <div className="m-5 inline-block">
+                    <PlayerBoardCard
+                      playerBoard={gameState.playerBoards[3]}
+                      onCollectedTilesClick={handleRowClick}
+                    />
+                  </div>
+                )}
+              </div>
               {/* Second row */}
               <div className="block">
                 <div className="flex flex-wrap justify-around text-center w-full">
@@ -293,22 +295,24 @@ const Session = () => {
                 </div>
               </div>
               {/* Conditionally render third row */}
-              {gameState.playerBoards[1] && (
-                <div className="m-5 inline-block">
-                  <PlayerBoardCard
-                    playerBoard={gameState.playerBoards[1]}
-                    onCollectedTilesClick={handleRowClick}
-                  />
-                </div>
-              )}
-              {gameState.playerBoards[0] && (
-                <div className="m-5 inline-block">
-                  <PlayerBoardCard
-                    playerBoard={gameState.playerBoards[0]}
-                    onCollectedTilesClick={handleRowClick}
-                  />
-                </div>
-              )}
+              <div>
+                {gameState.playerBoards[1] && (
+                  <div className="m-5 inline-block">
+                    <PlayerBoardCard
+                      playerBoard={gameState.playerBoards[1]}
+                      onCollectedTilesClick={handleRowClick}
+                    />
+                  </div>
+                )}
+                {gameState.playerBoards[0] && (
+                  <div className="m-5 inline-block">
+                    <PlayerBoardCard
+                      playerBoard={gameState.playerBoards[0]}
+                      onCollectedTilesClick={handleRowClick}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>

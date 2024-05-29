@@ -40,16 +40,14 @@ const Home = () => {
   }, [authUser]);
 
   return (
-
-    <div className="md:flex h-full">
-      <div className="w-full md:h-screen md:w-1/2 pb-10">
+    <div className="flex flex-col md:flex-row h-full">
+      <div className="w-full md:w-1/2 pb-10 md:pb-0 md:h-full">
         <RoomForm />
       </div>
-      <div className="md:w-1/2 h-full">
+      <div className="w-full md:w-1/2 flex-grow md:h-full overflow-auto">
         <HomeSideBar rooms={rooms} />
       </div>
     </div>
-    
   );
 };
 

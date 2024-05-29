@@ -468,6 +468,7 @@ const isValideMove = (playerBoard, color, rowInd) => {
 export const takeTiles = async (io, data) => {
     try {
         const user = await User.findById( {_id: io.handshake.query.userId});
+        console.log("user: ", user);
         if (!user || !user.roomId) {
             return console.log("No such user or user is not in a room");
         }
@@ -507,6 +508,10 @@ export const takeTiles = async (io, data) => {
                 marketCopy.push(tile);
             });
         }
+        if(marketCopy.every(tile => tile === "empty") || !marketCopy.includes(color)){
+            io.emit("Error", "No tiles to take");
+            return console.log("No tiles to take");
+        }
 
         let tilesToTake = [];
         if (source >= 0) {
@@ -536,6 +541,7 @@ export const takeTiles = async (io, data) => {
             }
         }
 
+        // Move tiles to playerBoard
         if (row === -1) {
             for (const tile of tilesToTake) {
                 const emptyIndex = playerBoard.floorTiles.findIndex(tile => tile === 'empty');

@@ -132,7 +132,7 @@ export const joinRoom = async (req,res) => {
             return res.status(400).json({error:"Room is full"})
         }
 
-        await User.findOneAndUpdate(
+        const user = await User.findOneAndUpdate(
             { _id: loggedInUserId },
             { roomId: roomId, status: 'waiting' }, 
             { new: true }
@@ -149,6 +149,7 @@ export const joinRoom = async (req,res) => {
         //SOCKET IO
         io.emit("updateRoom", senitizedRoom)
         res.status(200).json(senitizedRoom)
+        user.save();
 
     } catch (error) {
         console.log("Error in joinRoom: ", error.message);
